@@ -1,0 +1,30 @@
+[
+  {
+    "id": 1,
+    "name": "School of Commerce & Management"
+  },
+  {
+    "id": 2,
+    "name": "School of Engineering & IT"
+  },
+  {
+    "id": 3,
+    "name": "School of Pharmacy"
+  },
+  {
+    "id": 4,
+    "name": "School of Law"
+  },
+  {
+    "id": 5,
+    "name": "School of Nursing"
+  },
+  {
+    "id": 6,
+    "name": "School of Humanities"
+  },
+  {
+    "id": 7,
+    "name": "School of Allied Health Science"
+  }
+]

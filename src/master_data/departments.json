@@ -1,0 +1,92 @@
+[
+  {
+    "id": 1,
+    "schoolId": 1,
+    "name": "Department of Management"
+  },
+  {
+    "id": 2,
+    "schoolId": 1,
+    "name": "Department of Commerce"
+  },
+  {
+    "id": 3,
+    "schoolId": 2,
+    "name": "Department of Computer Science & IT"
+  },
+  {
+    "id": 4,
+    "schoolId": 2,
+    "name": "Department of Electrical & Electronics Engineering"
+  },
+  {
+    "id": 5,
+    "schoolId": 2,
+    "name": "Department of Mechanical Engineering"
+  },
+  {
+    "id": 6,
+    "schoolId": 3,
+    "name": "Department of Pharmacy"
+  },
+  {
+    "id": 7,
+    "schoolId": 4,
+    "name": "Department of Law"
+  },
+  {
+    "id": 8,
+    "schoolId": 5,
+    "name": "Department of Nursing"
+  },
+  {
+    "id": 9,
+    "schoolId": 6,
+    "name": "Department of English"
+  },
+  {
+    "id": 10,
+    "schoolId": 6,
+    "name": "Department of Fashion Design"
+  },
+  {
+    "id": 11,
+    "schoolId": 6,
+    "name": "Department of Journalism and Mass Communication"
+  },
+  {
+    "id": 12,
+    "schoolId": 7,
+    "name": "Department of Biotechnology"
+  },
+  {
+    "id": 13,
+    "schoolId": 7,
+    "name": "Department of Optometry"
+  },
+  {
+    "id": 14,
+    "schoolId": 7,
+    "name": "Department of Cardiovascular Technology"
+  },
+  {
+    "id": 15,
+    "schoolId": 7,
+    "name": "Department of Anaesthesia & Operation Theatre Technology"
+  },
+  {
+    "id": 16,
+    "schoolId": 7,
+    "name": "Department of Medical Laboratory Technology"
+  },
+  {
+    "id": 17,
+    "schoolId": 7,
+    "name": "Department of Medical Radiology & Imaging Technology"
+  },
+  {
+    "id": 18,
+    "schoolId": 7,
+    "name": "Department of Forensics"
+  }
+]

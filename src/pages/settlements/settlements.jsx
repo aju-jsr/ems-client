@@ -1,35 +1,35 @@
 import {
-  FormControl,
-  Grid,
-  InputLabel,
-  MenuItem,
-  TextField,
-  Select,
-  Button,
-  Box,
-  Alert,
-  Typography,
-  Link,
-  Autocomplete
+    FormControl,
+    Grid,
+    InputLabel,
+    MenuItem,
+    TextField,
+    Select,
+    Button,
+    Box,
+    Alert,
+    Typography,
+    Link,
+    Autocomplete
 } from "@mui/material";
 
 import { DataGrid } from "@mui/x-data-grid";
 
 import {
-  LocalizationProvider
+    LocalizationProvider
 } from "@mui/x-date-pickers";
 
 import {
-  AdapterDayjs
+    AdapterDayjs
 } from "@mui/x-date-pickers/AdapterDayjs";
 // import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs from "dayjs";
 
 import {
-  DatePicker
+    DatePicker
 } from "@mui/x-date-pickers";
 
-import React, { useEffect, useState  } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRef } from "react";
 
 // Style import
@@ -80,21 +80,21 @@ export default function Settlement() {
     const TodayformattedDate = `${currentDate.getFullYear()}-${String(
         currentDate.getMonth() + 1
     ).padStart(2, "0")}-${String(currentDate.getDate()).padStart(2, "0")}`;
-    
+
     const getFinancialYear = () => {
         const today = new Date();
         const year = today.getFullYear();
         const month = today.getMonth() + 1; // January = 1
 
         if (month >= 4) {
-        // April to December
-        return `${year}-${String(year + 1).slice(-2)}`;
+            // April to December
+            return `${year}-${String(year + 1).slice(-2)}`;
         } else {
-        // January to March
-        return `${year - 1}-${String(year).slice(-2)}`;
+            // January to March
+            return `${year - 1}-${String(year).slice(-2)}`;
         }
     };
-    
+
     // Submit form
     const [disableSubmit, setDisableSubmit] = useState(false);
     const [submitSuccess, setSubmitSuccess] = useState(false);
@@ -102,9 +102,9 @@ export default function Settlement() {
     // Set form data
     const [formData, setFormData] = useState({
         settlement_no: "ESN-",
-        sub_settlement_no:"",
+        sub_settlement_no: "",
         request_date: TodayformattedDate,
-        settlement_type:"",
+        settlement_type: "",
         status: "Draft",
         event_proposal_no: "",
         unit: "",
@@ -113,11 +113,11 @@ export default function Settlement() {
         event_end_date: null,
         school_id: "",
         department_id: "",
-        name_of_head:"",
-        financial_year:getFinancialYear(),
-        req_emp_id:JSON.parse(localStorage.getItem("user"))?.empId,
-        req_emp_name:JSON.parse(localStorage.getItem("user"))?.name,
-        manager_id:"",
+        name_of_head: "",
+        financial_year: getFinancialYear(),
+        req_emp_id: JSON.parse(localStorage.getItem("user"))?.empId,
+        req_emp_name: JSON.parse(localStorage.getItem("user"))?.name,
+        manager_id: "",
         approved_budget: "",
         adv_amount: "",
         actual_expense_total: "",
@@ -130,18 +130,18 @@ export default function Settlement() {
         branch: "",
         acc_type_id: "",
         created_at: null,
-        approved_by:"",
+        approved_by: "",
         approved_date: null,
-        approved_amount:"",
-        approved_remarks:"",
-        fin_approved_by:"",
-        fin_approved_date:"",
-        fin_approved_amount:"",
-        fin_remarks:"",
-        status_name:"Draft",
-        department_name:"",
-        
-      });
+        approved_amount: "",
+        approved_remarks: "",
+        fin_approved_by: "",
+        fin_approved_date: "",
+        fin_approved_amount: "",
+        fin_remarks: "",
+        status_name: "Draft",
+        department_name: "",
+
+    });
 
     // get the requested Settlements list from DB using Hook
     const {
@@ -155,7 +155,7 @@ export default function Settlement() {
     //     SettlementRows,
     //     Settlementloading,
     // } = useSettlement(settlementid);
-    
+
 
     // get the Settlements Type list from DB using Hook
     const { settlementtype } = useSettlementType();
@@ -171,11 +171,11 @@ export default function Settlement() {
         departments,
         loading: deptLoading,
         error: deptError,
-      } = useDept(formData.school_id);
+    } = useDept(formData.school_id);
 
     // get the Account Type from DB using Hook
-    const {  acctypes } = useAccTypes();
-    
+    const { acctypes } = useAccTypes();
+
     const onRowSelected = async (Selrow) => {
         // setSettlementid(Selrow.id);
         setDisableSubmit(true);
@@ -196,16 +196,16 @@ export default function Settlement() {
                     event_proposal_no: row.event_proposal_no,
                     unit: row.unit_id,
                     event_name: row.event_name,
-                    event_start_date: 
-                    // row.event_start_date,
+                    event_start_date:
+                        // row.event_start_date,
                         row.event_start_date
-                        ? dayjs(row.event_start_date)
-                        : null,
-                    event_end_date: 
-                    // row.event_end_date,
+                            ? dayjs(row.event_start_date)
+                            : null,
+                    event_end_date:
+                        // row.event_end_date,
                         row.event_end_date
-                        ? dayjs(row.event_end_date)
-                        : null,
+                            ? dayjs(row.event_end_date)
+                            : null,
                     school_id: row.school_id,
                     department_id: row.department_id,
                     name_of_head: row.name_of_head,
@@ -215,13 +215,13 @@ export default function Settlement() {
                     approved_budget: row.approved_budget === null ||
                         row.approved_budget === undefined ||
                         row.approved_budget === ""
-                            ? ""
-                            : row.approved_budget,
+                        ? ""
+                        : row.approved_budget,
                     adv_amount: row.adv_amount === null ||
                         row.adv_amount === undefined ||
                         row.adv_amount === ""
-                            ? ""
-                            : row.adv_amount,
+                        ? ""
+                        : row.adv_amount,
                     actual_expense_total: row.actual_expense,
                     balance_excess: row.balance_excess,
                     remarks: row.remarks,
@@ -241,11 +241,11 @@ export default function Settlement() {
                     fin_remarks: row.fin_remarks
                 }));
             }
-            
 
-         });
 
-         console.log("on row select ");
+        });
+
+        console.log("on row select ");
     };
 
     // Requested Settlement List Grid columns
@@ -279,7 +279,7 @@ export default function Settlement() {
         {
             field: "sub_settlement_no",
             headerName: "Sub No",
-            width: 80   ,
+            width: 80,
         },
         {
             field: "department_name",
@@ -329,7 +329,7 @@ export default function Settlement() {
             headerName: "Type",
             width: 100,
         },
-        
+
         {
             field: "status_name",
             headerName: "Status",
@@ -405,7 +405,7 @@ export default function Settlement() {
             width: 100,
             sortable: false,
             filterable: false,
-            
+
             renderCell: (params) => (
                 <Button
                     variant="contained"
@@ -442,8 +442,8 @@ export default function Settlement() {
 
     const handleExpDateChange = (field) => (value) => {
         setExpenseForm((prevData) => ({
-        ...prevData,
-        [field]: value,
+            ...prevData,
+            [field]: value,
         }));
     };
     // Add row handler
@@ -458,7 +458,7 @@ export default function Settlement() {
             alert("Please fill all mandatory fields. expense_date, expenses_details, expenses_head and amount are mandatory fields");
             return;
         }
-        else{
+        else {
             expenseForm.expense_date = formatDate(expenseForm.expense_date);
         }
 
@@ -469,7 +469,7 @@ export default function Settlement() {
             ...expenseForm,
         };
 
-        
+
         formData.actual_expense_total = Number(totalexpense) + Number(newRow.amount);
         formData.balance_excess = Number(formData.approved_budget) - (formData.actual_expense_total);
         setTotaleExpense(Number(totalexpense) + Number(newRow.amount));
@@ -491,11 +491,11 @@ export default function Settlement() {
     const [subsettlement, setSubSettlement] = useState(false);
     const handleNewOrSubSettlement = (field) => {
         handleClear();
-        if(field === 'sub'){
+        if (field === 'sub') {
             setSubSettlement(true);
             // formData.settlement_no = "";
             // handleClear();
-        }else{
+        } else {
             setSubSettlement(false);
         }
     }
@@ -521,8 +521,8 @@ export default function Settlement() {
     // event Handler Date change of date controls
     const handleDateChange = (field) => (value) => {
         setFormData((prevData) => ({
-        ...prevData,
-        [field]: value,
+            ...prevData,
+            [field]: value,
         }));
     };
 
@@ -534,13 +534,13 @@ export default function Settlement() {
         setAttachmentError(files.length === 0);
         console.log("Selected Files:");
         files.forEach((file) => {
-        console.log(file.name);
+            console.log(file.name);
         });
     };
     // to load the attached file
     const [filelist, setFileList] = useState([]);
 
-    
+
     // const [attachmentError, setAttachmentError] = useState(false);
     // const [attachments, setAttachments] = useState([]);
 
@@ -551,14 +551,15 @@ export default function Settlement() {
     } = useSettlementPOST();
 
     const handleSubmit = async (event) => {
-        event.preventDefault;
+        event.preventDefault();
         setSubmitSuccess(false);
+        setDisableSubmit(true);
 
         if (attachments.length === 0 && formData.proposal === 2) {
             setAttachmentError(true);
             alert("Please upload Bills (Attachments).");
             return;
-        }else{
+        } else {
             setAttachmentError(false);
         }
 
@@ -570,7 +571,7 @@ export default function Settlement() {
         }));
 
         const settlementJson = {
-            settlement_no:  subsettlement === true
+            settlement_no: subsettlement === true
                 ? formData.settlement_no
                 : null,
             sub_settlement_no: formData.sub_settlement_no,
@@ -590,49 +591,49 @@ export default function Settlement() {
             req_emp_id: formData.req_emp_id,
             req_emp_name: formData.req_emp_name,
             manager_id: JSON.parse(localStorage.getItem("user"))?.manager_id,
-            approved_budget: 
+            approved_budget:
                 formData.approved_budget &&
-                formData.approved_budget !== ""
-                ? parseFloat(formData.approved_budget).toFixed(2)
-                : null,
-                // formData.approved_budget &&
-                // formData.approved_budget !== ""
-                // ? formatDate(formData.approved_budget)
-                // : null,
+                    formData.approved_budget !== ""
+                    ? parseFloat(formData.approved_budget).toFixed(2)
+                    : null,
+            // formData.approved_budget &&
+            // formData.approved_budget !== ""
+            // ? formatDate(formData.approved_budget)
+            // : null,
             adv_amount: formData.adv_amount &&
                 formData.adv_amount !== ""
                 ? parseFloat(formData.adv_amount).toFixed(2)
                 : null,
-                // formData.adv_amount &&
-                // formData.adv_amount !== ""
-                // ? formatDate(formData.adv_amount)
-                // : null,
+            // formData.adv_amount &&
+            // formData.adv_amount !== ""
+            // ? formatDate(formData.adv_amount)
+            // : null,
             actual_expense: parseFloat(formData.actual_expense_total).toFixed(2),
-                // formData.actual_expense_total &&
-                // formData.actual_expense_total !== ""
-                // ? formatDate(Number(formData.actual_expense_total))
-                // : null,
+            // formData.actual_expense_total &&
+            // formData.actual_expense_total !== ""
+            // ? formatDate(Number(formData.actual_expense_total))
+            // : null,
             balance_excess: parseFloat(formData.balance_excess).toFixed(2),
-                // formData.balance_excess &&
-                // formData.balance_excess !== ""
-                // ? formatDate(formData.balance_excess)
-                // : null,
+            // formData.balance_excess &&
+            // formData.balance_excess !== ""
+            // ? formatDate(formData.balance_excess)
+            // : null,
             remarks: formData.remarks,
             acc_holder_name: formData.acc_holder_name,
             acc_number: formData.acc_number,
             ifsc_code: formData.ifsc_code,
             bank_name: formData.bank_name,
             branch: formData.branch,
-            acc_type_id: 
+            acc_type_id:
                 formData.acc_type_id &&
-                formData.acc_type_id !== ""
-                ? formData.acc_type_id
-                : null,
+                    formData.acc_type_id !== ""
+                    ? formData.acc_type_id
+                    : null,
             attachments: attachmentList,
             expenses: expenseRows
         }
 
-        try{
+        try {
             const response = await submitSettlement(settlementJson);
             console.log("API Response:", response);
             setSettlementResponse(response);
@@ -641,15 +642,15 @@ export default function Settlement() {
             setFormData((prev) => ({
                 ...prev,
                 settlement_no:
-                response[0]?.settlement_no ||
-                prev.settlement_no,
+                    response[0]?.settlement_no ||
+                    prev.settlement_no,
             }));
 
             // window.location.reload();
             setTimeout(() => {
                 window.location.reload();
-            }, 1000);
-            
+            }, 10000);
+
         } catch (error) {
             console.error(error);
             setSubmitSuccess(false);
@@ -662,9 +663,9 @@ export default function Settlement() {
 
     const initialFormData = {
         settlement_no: "ESN-",
-        sub_settlement_no:"",
+        sub_settlement_no: "",
         request_date: TodayformattedDate,
-        settlement_type:"",
+        settlement_type: "",
         status: "Draft",
         event_proposal_no: "",
         unit: "",
@@ -673,11 +674,11 @@ export default function Settlement() {
         event_end_date: null,
         school_id: "",
         department_id: "",
-        name_of_head:"",
-        financial_year:getFinancialYear(),
-        req_emp_id:JSON.parse(localStorage.getItem("user"))?.empId,
-        req_emp_name:JSON.parse(localStorage.getItem("user"))?.name,
-        manager_id:"",
+        name_of_head: "",
+        financial_year: getFinancialYear(),
+        req_emp_id: JSON.parse(localStorage.getItem("user"))?.empId,
+        req_emp_name: JSON.parse(localStorage.getItem("user"))?.name,
+        manager_id: "",
         approved_budget: "",
         adv_amount: "",
         actual_expense_total: "",
@@ -690,16 +691,16 @@ export default function Settlement() {
         branch: "",
         acc_type_id: "",
         created_at: null,
-        approved_by:"",
+        approved_by: "",
         approved_date: null,
-        approved_amount:"",
-        approved_remarks:"",
-        fin_approved_by:"",
-        fin_approved_date:"",
-        fin_approved_amount:"",
-        fin_remarks:"",
-        status_name:"Draft",
-        department_name:"",
+        approved_amount: "",
+        approved_remarks: "",
+        fin_approved_by: "",
+        fin_approved_date: "",
+        fin_approved_amount: "",
+        fin_remarks: "",
+        status_name: "Draft",
+        department_name: "",
     };
 
     const handleClear = () => {
@@ -753,15 +754,15 @@ export default function Settlement() {
                     adv_amount: proposal.advance_amount,
                     unit: proposal.unit_id,
                     event_name: proposal.event_name,
-                    event_start_date: 
-                    // formatDate(proposal.event_start_date),
+                    event_start_date:
+                        // formatDate(proposal.event_start_date),
                         proposal.event_start_date
-                        ? dayjs(proposal.event_start_date)
-                        : null,
-                    event_end_date: 
-                         proposal.event_end_date
-                        ? dayjs(proposal.event_end_date)
-                        : null,
+                            ? dayjs(proposal.event_start_date)
+                            : null,
+                    event_end_date:
+                        proposal.event_end_date
+                            ? dayjs(proposal.event_end_date)
+                            : null,
                     school_id: proposal.school_id,
                     department_id: proposal.department_id,
                     name_of_head: proposal.name_of_head,
@@ -780,39 +781,39 @@ export default function Settlement() {
 
     // check the settlement No and sub settlement no is exist or not
     const checkSettlementNo = async (subSettlementNo) => {
-    try {
+        try {
 
-        // const response = await getCheckSettlement
+            // const response = await getCheckSettlement
 
-         const settlementJson = {
-            settlement_no: formData.settlement_no,
-            sub_settlement_no: subSettlementNo,
-            req_emp_id: formData.req_emp_id,
-         }
+            const settlementJson = {
+                settlement_no: formData.settlement_no,
+                sub_settlement_no: subSettlementNo,
+                req_emp_id: formData.req_emp_id,
+            }
 
-        const response = await getCheckSettlement(settlementJson);
-        
-        // setTotaleExpense(response.data[0].total_actual_expenses)
-        // formData.actual_expense_total = Number(response.data[0].total_actual_expenses);
-        console.log("API response:", response.data);
+            const response = await getCheckSettlement(settlementJson);
 
-        return true;
+            // setTotaleExpense(response.data[0].total_actual_expenses)
+            // formData.actual_expense_total = Number(response.data[0].total_actual_expenses);
+            console.log("API response:", response.data);
 
-    } catch (error) {
+            return true;
 
-        if (error.response?.status === 409) {
-            formData.sub_settlement_no = "";
-            alert(error.response.data.message);
-        } else {
-            console.error("Check settlement error:", error);
-            alert("Unable to check settlement number.");
+        } catch (error) {
+
+            if (error.response?.status === 409) {
+                formData.sub_settlement_no = "";
+                alert(error.response.data.message);
+            } else {
+                console.error("Check settlement error:", error);
+                alert("Unable to check settlement number.");
+            }
+
+            return false;
         }
+    };
 
-        return false;
-    }
-};
-
-    return(
+    return (
         <SectionCard title="">
             <Box component="form" onSubmit={handleSubmit}>
                 {/* Settlements List */}
@@ -885,7 +886,7 @@ export default function Settlement() {
                         />
                     </Box>
                     <Grid container spacing={3}>
-                        
+
                         <FormControl required sx={formControl3rows} >
                             <Button
                                 variant="contained"
@@ -895,15 +896,15 @@ export default function Settlement() {
                                 Request New Settlement
                             </Button>
                         </FormControl>
-                        
+
                         <FormControl required sx={formControl3rows} >
                             <Button
                                 variant="contained"
                                 onClick={() => handleNewOrSubSettlement('sub')}
                                 sx={{ mb: 2 }}
                             >
-                            Request Sub Settlement
-                        </Button>
+                                Request Sub Settlement
+                            </Button>
                         </FormControl>
                     </Grid>
                 </fieldset>
@@ -928,22 +929,46 @@ export default function Settlement() {
                                     slotProps={{
                                         input: { readOnly: !subsettlement },
                                     }}
+                                    sx={{
+                                        "& .MuiInputLabel-root": {
+                                            color: formData.settlement_no ? "blue" : "red",
+                                        },
+                                        "& .MuiInputLabel-root.Mui-focused": {
+                                            color: formData.settlement_no ? "blue" : "red",
+                                        },
+                                    }}
                                 />
                             </FormControl>
 
-                            <FormControl required sx={formControl3rows} >
-                                <InputLabel id="lblSubNo">Sub Settlement No.</InputLabel>
+                            <FormControl sx={formControl3rows} >
+                                <InputLabel id="lblSubNo" sx={{
+                                    color: formData.sub_settlement_no
+                                        ? "blue"
+                                        : "red",
+
+                                    "&.Mui-focused": {
+                                        color: formData.sub_settlement_no
+                                            ? "blue"
+                                            : "red",
+                                    },
+                                }}>Sub Settlement No.</InputLabel>
                                 <Select
                                     labelId="lblSubNo"
                                     id="ddlSubNo"
                                     value={formData.sub_settlement_no}
                                     label="Sub Settlement No"
 
+                                    required
+                                    error={
+                                        !formData.sub_settlement_no
+                                    }
+
                                     onChange={(e) => {
                                         handleFieldChange("sub_settlement_no")(e);
 
                                         checkSettlementNo(e.target.value);
                                     }}
+
                                     sx={{
                                         height: 50,
                                         '& .MuiSelect-select': {
@@ -970,6 +995,7 @@ export default function Settlement() {
                                     <MenuItem value="E">E</MenuItem>
                                 </Select>
                             </FormControl>
+
                             <FormControl required sx={formControl3rows} >
                                 <TextField
                                     label="Request Date"
@@ -978,25 +1004,46 @@ export default function Settlement() {
                                     slotProps={{
                                         input: { readOnly: true },
                                     }}
+                                    sx={{
+                                        "& .MuiInputLabel-root": {
+                                            color: formData.request_date ? "blue" : "red",
+                                        },
+                                        "& .MuiInputLabel-root.Mui-focused": {
+                                            color: formData.request_date ? "blue" : "red",
+                                        },
+                                    }}
                                 />
                             </FormControl>
                         </Grid>
                         {/* 2nd Row  Settlement Type Status */}
                         <Grid container spacing={3}>
                             <FormControl sx={formControl3rows} >
-                                <InputLabel id="lblSettlementType" required>Choose Settlement Type</InputLabel>
+                                <InputLabel id="lblSettlementType" required sx={{
+                                    color: formData.settlement_type
+                                        ? "blue"
+                                        : "red",
+
+                                    "&.Mui-focused": {
+                                        color: formData.settlement_type
+                                            ? "blue"
+                                            : "red",
+                                    },
+                                }}>Choose Settlement Type</InputLabel>
                                 <Select
                                     labelId="lblSettlementType"
                                     id="ddlSettlementType"
                                     value={formData.settlement_type}
                                     required
+                                    error={
+                                        !formData.settlement_type
+                                    }
                                     label="Choose Settlement Type"
                                     onChange={(event) => {
                                         const value = event.target.value;
-                                        if(value === 1){
+                                        if (value === 1) {
                                             alert(`While Selecting Settlement Type "Even", you should have Proposal No. If Not Please raise Settlement Type “Individual”.`);
-                                        }else{
-                                            formData.event_proposal_no= "  ";
+                                        } else {
+                                            formData.event_proposal_no = "  ";
                                         }
 
                                         handleFieldChange("settlement_type")(event);
@@ -1039,6 +1086,14 @@ export default function Settlement() {
                                     slotProps={{
                                         input: { readOnly: true },
                                     }}
+                                    sx={{
+                                        "& .MuiInputLabel-root": {
+                                            color: formData.status_name ? "blue" : "red",
+                                        },
+                                        "& .MuiInputLabel-root.Mui-focused": {
+                                            color: formData.status_name ? "blue" : "red",
+                                        },
+                                    }}
                                 />
                             </FormControl>
                         </Grid>
@@ -1050,7 +1105,7 @@ export default function Settlement() {
                                     value={formData.event_proposal_no}
                                     placeholder="EBP-"
                                     onChange={handleFieldChange("event_proposal_no")}
-                                     
+
                                     required={formData.settlement_type === 1 || formData.settlement_type === "1"}
                                     error={
                                         (formData.settlement_type === 1 || formData.settlement_type === "1") &&
@@ -1058,7 +1113,7 @@ export default function Settlement() {
                                     }
                                     helperText={
                                         (formData.settlement_type === 1 || formData.settlement_type === "1") &&
-                                        !formData.event_proposal_no
+                                            !formData.event_proposal_no
                                             ? "Proposal No is required"
                                             : ""
                                     }
@@ -1071,12 +1126,25 @@ export default function Settlement() {
                             </FormControl>
 
                             <FormControl sx={formControl3rows} >
-                                <InputLabel id="lblUnit" required>Choose Unit</InputLabel>
+                                <InputLabel id="lblUnit" required sx={{
+                                    color: formData.unit
+                                        ? "blue"
+                                        : "red",
+
+                                    "&.Mui-focused": {
+                                        color: formData.unit
+                                            ? "blue"
+                                            : "red",
+                                    },
+                                }}>Choose Unit</InputLabel>
                                 <Select
                                     labelId="lblUnit"
                                     id="ddlUnit"
                                     value={formData.unit}
                                     required
+                                    error={
+                                        !formData.unit
+                                    }
                                     label="Choose Unit"
                                     onChange={handleFieldChange("unit")}
                                     // Controls the structural height of the selector input box
@@ -1116,10 +1184,22 @@ export default function Settlement() {
                                     value={formData.event_name}
                                     placeholder="Event Name"
                                     required
-                                     onChange={handleFieldChange("event_name")}
+                                    error={
+                                        !formData.event_name
+                                    }
+                                    onChange={handleFieldChange("event_name")}
+                                    sx={{
+                                        "& .MuiInputLabel-root": {
+                                            color: formData.event_name ? "blue" : "red",
+                                        },
+                                        "& .MuiInputLabel-root.Mui-focused": {
+                                            color: formData.event_name ? "blue" : "red",
+                                        },
+                                    }}
                                 // slotProps={{
                                 //     input: { readOnly: true },
                                 // }}
+
                                 />
                             </FormControl>
 
@@ -1132,11 +1212,26 @@ export default function Settlement() {
                                     format="DD-MM-YYYY"
                                     value={formData.event_start_date}
                                     onChange={handleDateChange("event_start_date")}
+
                                     slotProps={{
                                         textField: {
                                             fullWidth: true,
-                                            required: true
+                                            required: true,
+                                            error: !formData.event_start_date,
+                                            sx: {
+                                                "& .MuiInputLabel-root": {
+                                                    color: formData.event_start_date
+                                                        ? "blue"
+                                                        : "red",
+                                                },
+                                                "& .MuiInputLabel-root.Mui-focused": {
+                                                    color: formData.event_start_date
+                                                        ? "blue"
+                                                        : "red",
+                                                },
+                                            },
                                         }
+
 
                                     }}
                                 />
@@ -1153,7 +1248,19 @@ export default function Settlement() {
                                         textField: {
                                             fullWidth: true,
                                             required: true,
-
+                                            error: !formData.event_end_date,
+                                            sx: {
+                                                "& .MuiInputLabel-root": {
+                                                    color: formData.event_end_date
+                                                        ? "blue"
+                                                        : "red",
+                                                },
+                                                "& .MuiInputLabel-root.Mui-focused": {
+                                                    color: formData.event_end_date
+                                                        ? "blue"
+                                                        : "red",
+                                                },
+                                            },
                                         }
                                     }}
                                 />
@@ -1162,19 +1269,32 @@ export default function Settlement() {
                         {/* 5th Row  School, department and head of Department */}
                         <Grid container spacing={3}>
                             <FormControl sx={formControl3rows}>
-                                <InputLabel id="lblSchool" required>Choose School</InputLabel>
+                                <InputLabel id="lblSchool" required sx={{
+                                    color: formData.school_id
+                                        ? "blue"
+                                        : "red",
+
+                                    "&.Mui-focused": {
+                                        color: formData.school_id
+                                            ? "blue"
+                                            : "red",
+                                    },
+                                }}>Choose School</InputLabel>
                                 <Select
                                     labelId="lblSchool"
                                     id="ddlSchool"
                                     value={formData.school_id}
                                     required
+                                    error={
+                                        !formData.settlement_type
+                                    }
                                     label="Choose School"
                                     onChange={(e) => {
                                         const schoolId = Number(e.target.value);
 
                                         setFormData((prevData) => ({
                                             ...prevData,
-                                            school_id:schoolId,
+                                            school_id: schoolId,
                                             department_id: "",
                                             headerName: "",
                                         }));
@@ -1212,12 +1332,25 @@ export default function Settlement() {
                             </FormControl>
                             {/* Department Drop down */}
                             <FormControl sx={formControl3rows}>
-                                <InputLabel id="lbldept" required>Choose Department</InputLabel>
+                                <InputLabel id="lbldept" required sx={{
+                                    color: formData.department_id
+                                        ? "blue"
+                                        : "red",
+
+                                    "&.Mui-focused": {
+                                        color: formData.department_id
+                                            ? "blue"
+                                            : "red",
+                                    },
+                                }}>Choose Department</InputLabel>
                                 <Select
                                     labelId="lbldept"
                                     id="ddlDept"
                                     value={formData.department_id}
                                     required
+                                    error={
+                                        !formData.department_id
+                                    }
                                     label="Choose Department"
                                     onChange={(e) => {
                                         const deptId = Number(e.target.value);
@@ -1278,6 +1411,14 @@ export default function Settlement() {
                                     slotProps={{
                                         input: { readOnly: true },
                                     }}
+                                    sx={{
+                                        "& .MuiInputLabel-root": {
+                                            color: formData.name_of_head ? "blue" : "red",
+                                        },
+                                        "& .MuiInputLabel-root.Mui-focused": {
+                                            color: formData.name_of_head ? "blue" : "red",
+                                        },
+                                    }}
                                 />
                             </FormControl>
                         </Grid>
@@ -1294,6 +1435,14 @@ export default function Settlement() {
                                     slotProps={{
                                         input: { readOnly: true },
                                     }}
+                                    sx={{
+                                        "& .MuiInputLabel-root": {
+                                            color: formData.req_emp_id ? "blue" : "red",
+                                        },
+                                        "& .MuiInputLabel-root.Mui-focused": {
+                                            color: formData.req_emp_id ? "blue" : "red",
+                                        },
+                                    }}
                                 />
 
                             </FormControl>
@@ -1306,6 +1455,14 @@ export default function Settlement() {
                                     value={formData.req_emp_name}
                                     slotProps={{
                                         input: { readOnly: true },
+                                    }}
+                                    sx={{
+                                        "& .MuiInputLabel-root": {
+                                            color: formData.req_emp_name ? "blue" : "red",
+                                        },
+                                        "& .MuiInputLabel-root.Mui-focused": {
+                                            color: formData.req_emp_name ? "blue" : "red",
+                                        },
                                     }}
                                 />
                             </FormControl>
@@ -1320,6 +1477,14 @@ export default function Settlement() {
                                         input: { readOnly: true },
                                     }}
 
+                                    sx={{
+                                        "& .MuiInputLabel-root": {
+                                            color: "blue",
+                                        },
+                                        "& .MuiInputLabel-root.Mui-focused": {
+                                            color: "blue",
+                                        },
+                                    }}
                                 />
                             </FormControl>
                         </Grid>
@@ -1337,10 +1502,25 @@ export default function Settlement() {
                                     format="DD-MM-YYYY"
                                     value={expenseForm.expense_date}
                                     onChange={handleExpDateChange("expense_date")}
+                                    
                                     slotProps={{
                                         textField: {
                                             fullWidth: true,
-                                            // required: true
+                                            // required: true,
+                                            error: !expenseForm.expense_date,
+                                            sx: {
+                                                "& .MuiInputLabel-root": {
+                                                    color: expenseForm.expense_date
+                                                        ? "blue"
+                                                        : "red",
+                                                },
+                                                "& .MuiInputLabel-root.Mui-focused": {
+                                                    color: expenseForm.expense_date
+                                                        ? "blue"
+                                                        : "red",
+                                                },
+                                            },
+                                            
                                         }
 
                                     }}
@@ -1353,9 +1533,21 @@ export default function Settlement() {
                                     id="txtExpenseDetails"
                                     value={expenseForm.expenses_details}
                                     onChange={handleExpFieldChange("expenses_details")}
-                                    // slotProps={{
-                                    //     input: { readOnly: true },
-                                    // }}
+                                    // required
+                                    error={
+                                        !expenseForm.expenses_details
+                                    }
+                                    sx={{
+                                        "& .MuiInputLabel-root": {
+                                            color: expenseForm.expenses_details ? "blue" : "red",
+                                        },
+                                        "& .MuiInputLabel-root.Mui-focused": {
+                                            color: expenseForm.expenses_details ? "blue" : "red",
+                                        },
+                                    }}
+                                // slotProps={{
+                                //     input: { readOnly: true },
+                                // }}
                                 />
                             </FormControl>
                             <FormControl required sx={formControl3rows} >
@@ -1365,9 +1557,18 @@ export default function Settlement() {
                                     id="txtExpenseHead"
                                     value={expenseForm.expenses_head}
                                     onChange={handleExpFieldChange("expenses_head")}
-                                    // slotProps={{
-                                    //     input: { readOnly: true },
-                                    // }}
+
+                                    sx={{
+                                        "& .MuiInputLabel-root": {
+                                            color: expenseForm.expenses_head ? "blue" : "red",
+                                        },
+                                        "& .MuiInputLabel-root.Mui-focused": {
+                                            color: expenseForm.expenses_head ? "blue" : "red",
+                                        },
+                                    }}
+                                // slotProps={{
+                                //     input: { readOnly: true },
+                                // }}
                                 />
                             </FormControl>
                         </Grid>
@@ -1378,6 +1579,10 @@ export default function Settlement() {
                                     id="txtAmount"
                                     label="Amount"
                                     placeholder="Amount"
+                                    // required
+                                    error={
+                                        !expenseForm.amount
+                                    }
                                     
                                     value={expenseForm.amount}
                                     onChange={handleExpFieldChange("amount")}
@@ -1389,19 +1594,27 @@ export default function Settlement() {
 
                                     onWheel={(e) => e.target.blur()}
                                     sx={{
-                                        "& input[type=number]": {
-                                            MozAppearance: "textfield",
+                                        "& .MuiInputLabel-root": {
+                                            color: expenseForm.amount ? "blue" : "red",
                                         },
-                                        "& input[type=number]::-webkit-outer-spin-button, & input[type=number]::-webkit-inner-spin-button":
-                                        {
-                                            WebkitAppearance: "none",
-                                            margin: 0,
+                                        "& .MuiInputLabel-root.Mui-focused": {
+                                            color: expenseForm.amount ? "blue" : "red",
                                         },
                                     }}
                                 />
                             </FormControl>
                             <FormControl required sx={formControl3rows} >
-                                <InputLabel id="lblIsBill">Choose Bill (Y/N)</InputLabel>
+                                <InputLabel id="lblIsBill" sx={{
+                                    color: expenseForm.has_bill
+                                        ? "blue"
+                                        : "red",
+
+                                    "&.Mui-focused": {
+                                        color: expenseForm.has_bill
+                                            ? "blue"
+                                            : "red",
+                                    },
+                                }}>Choose Bill (Y/N)</InputLabel>
                                 <Select
                                     labelId="lblIsBill"
                                     id="ddlIsBill"
@@ -1431,12 +1644,22 @@ export default function Settlement() {
                                 >
                                     <MenuItem value="Y">Y</MenuItem>
                                     <MenuItem value="N">N</MenuItem>
-                                    
+
                                 </Select>
                             </FormControl>
 
                             <FormControl sx={formControl3rows} >
-                                <InputLabel id="lblIsBill">Choose paid to Party (Y/N)</InputLabel>
+                                <InputLabel id="lblIsBill" sx={{
+                                    color: expenseForm.paid_to_party
+                                        ? "blue"
+                                        : "red",
+
+                                    "&.Mui-focused": {
+                                        color: expenseForm.paid_to_party
+                                            ? "blue"
+                                            : "red",
+                                    },
+                                }}>Choose paid to Party (Y/N)</InputLabel>
                                 <Select
                                     labelId="lblIsPpaid_to_Party"
                                     id="ddlIsPpaid_to_Party"
@@ -1466,160 +1689,162 @@ export default function Settlement() {
                                 >
                                     <MenuItem value="Y">Y</MenuItem>
                                     <MenuItem value="N">N</MenuItem>
-                                    
+
                                 </Select>
                             </FormControl>
                         </Grid>
                         <Box sx={{ height: 370, width: 1000 }}>
-                        <Button
-                            variant="contained"
-                            onClick={handleAddExpense}
-                            sx={{ mb: 2 }}
-                            disabled={disableSubmit}
-                        >
-                            Add Expense
-                        </Button>
-                        <DataGrid
-                            rows={expenseRows}
-                            columns={actualExpensesColumns}
-                            // processRowUpdate={processRowUpdate}
-                            // experimentalFeatures={{ newEditingApi: true }}
-                            // disableRowSelectionOnClick
-                            // autoHeight
-                            pageSizeOptions={[5, 10]}
-                            initialState={{
-                            pagination: {
-                                paginationModel: {
-                                pageSize: 5,
-                                },
-                            },
-                            }}
-                            sx={{
-                                // Header
-                                height: 320,
-                                "& .MuiDataGrid-columnHeaders": {
-                                    backgroundColor: "#FFD54F", // Yellow
-                                    color: "#000",
-                                    fontWeight: "bold",
-                                    fontSize: "0.80rem",
-                                },
+                            <Button
+                                variant="contained"
+                                onClick={handleAddExpense}
+                                sx={{ mb: 2 }}
+                                disabled={disableSubmit}
+                            >
+                                Add Expense
+                            </Button>
+                            <DataGrid
+                                rows={expenseRows}
+                                columns={actualExpensesColumns}
+                                // processRowUpdate={processRowUpdate}
+                                // experimentalFeatures={{ newEditingApi: true }}
+                                // disableRowSelectionOnClick
+                                // autoHeight
+                                pageSizeOptions={[5, 10]}
+                                initialState={{
+                                    pagination: {
+                                        paginationModel: {
+                                            pageSize: 5,
+                                        },
+                                    },
+                                }}
+                                sx={{
+                                    // Header
+                                    height: 320,
+                                    "& .MuiDataGrid-columnHeaders": {
+                                        backgroundColor: "#FFD54F", // Yellow
+                                        color: "#000",
+                                        fontWeight: "bold",
+                                        fontSize: "0.80rem",
+                                    },
 
-                                "& .MuiDataGrid-columnHeader": {
-                                    backgroundColor: "#FFD54F",
-                                },
+                                    "& .MuiDataGrid-columnHeader": {
+                                        backgroundColor: "#FFD54F",
+                                    },
 
-                                "& .MuiDataGrid-columnHeaderTitle": {
-                                    fontWeight: "bold",
-                                    fontSize: "0.80rem",
-                                },
+                                    "& .MuiDataGrid-columnHeaderTitle": {
+                                        fontWeight: "bold",
+                                        fontSize: "0.80rem",
+                                    },
 
-                                // Rows
-                                "& .MuiDataGrid-row": {
-                                    fontSize: "0.80rem",
-                                },
+                                    // Rows
+                                    "& .MuiDataGrid-row": {
+                                        fontSize: "0.80rem",
+                                    },
 
-                                // Cells
-                                "& .MuiDataGrid-cell": {
-                                    whiteSpace: "normal !important",
-                                    wordBreak: "break-word",
-                                    lineHeight: "1.5 !important",
-                                    display: "flex",
-                                    alignItems: "center",
-                                    py: 1,
-                                    fontSize: "0.80rem",
-                                    wordWrap: "break-word",
-                                    overflowWrap: "break-word",
+                                    // Cells
+                                    "& .MuiDataGrid-cell": {
+                                        whiteSpace: "normal !important",
+                                        wordBreak: "break-word",
+                                        lineHeight: "1.5 !important",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        py: 1,
+                                        fontSize: "0.80rem",
+                                        wordWrap: "break-word",
+                                        overflowWrap: "break-word",
 
-                                },
+                                    },
 
-                                // Footer
-                                "& .MuiDataGrid-footerContainer": {
-                                    fontSize: "0.80rem",
-                                },
-                            }}
+                                    // Footer
+                                    "& .MuiDataGrid-footerContainer": {
+                                        fontSize: "0.80rem",
+                                    },
+                                }}
 
-                        
-                        />
-                        
-                        
 
-                    </Box>
+                            />
+
+
+
+                        </Box>
                     </LocalizationProvider>
-                    
+
                 </fieldset>
 
                 {/* Budget Summary */}
                 <fieldset >
                     <legend>Budget Summary</legend>
                     <Grid container spacing={3}>
-                            <FormControl required sx={formControl4rows} >
-                                 <TextField
-                                    type="number"
-                                    id="txtApprovedAmount"
-                                    label="Approved Amount (A)"
-                                    placeholder="Approved Amount (A)"
-                                    
-                                    value={formData.approved_budget}
-                                    onChange={handleExpFieldChange("approved_budget")}
-                                    slotProps={{
-                                        input: { readOnly: true },
-                                    }}
-                                />
-                            </FormControl>
-                            <FormControl required sx={formControl4rows} >
-                                 <TextField
-                                    type="number"
-                                    id="txtAdvAmount"
-                                    label="Adv Amount (B)"
-                                    placeholder="Adv Amount (B)"
-                                    
-                                    value={formData.adv_amount}
-                                    onChange={handleExpFieldChange("adv_amount")}
-                                    slotProps={{
-                                        input: { readOnly: true },
-                                    }}
-                                />
-                            </FormControl>
-                            <FormControl required sx={formControl4rows} >
-                                 <TextField
-                                    type="number"
-                                    id="txtActualExpense"
-                                    label="Actual Expense (c)"
-                                    placeholder="Actual Expense (C)"
-                                    value={formData.actual_expense_total}
-                                    onChange={handleExpFieldChange("actual_expense_total")}
-                                    slotProps={{
-                                        input: { readOnly: true },
-                                    }}
-                                />
-                            </FormControl>
-                            <FormControl required sx={formControl4rows} >
-                                 <TextField
-                                    type="number"
-                                    id="txtBalanceExpense"
-                                    label="Balance/Excess (A-C)"
-                                    placeholder="Balance/Excess (A-C)"
-                                    
-                                    value={formData.balance_excess}
-                                    onChange={handleExpFieldChange("balance_excess")}
-                                    slotProps={{
-                                        input: { readOnly: true },
-                                    }}
-                                />
-                            </FormControl>
-                    </Grid>        
+                        <FormControl required sx={formControl4rows} >
+                            <TextField
+                                type="number"
+                                id="txtApprovedAmount"
+                                label="Approved Amount (A)"
+                                placeholder="Approved Amount (A)"
+
+                                value={formData.approved_budget}
+                                onChange={handleExpFieldChange("approved_budget")}
+                                slotProps={{
+                                    input: { readOnly: true },
+                                }}
+                            />
+                        </FormControl>
+                        <FormControl required sx={formControl4rows} >
+                            <TextField
+                                type="number"
+                                id="txtAdvAmount"
+                                label="Adv Amount (B)"
+                                placeholder="Adv Amount (B)"
+
+                                value={formData.adv_amount}
+                                onChange={handleExpFieldChange("adv_amount")}
+                                slotProps={{
+                                    input: { readOnly: true },
+                                }}
+                            />
+                        </FormControl>
+                        <FormControl required sx={formControl4rows} >
+                            <TextField
+                                type="number"
+                                id="txtActualExpense"
+                                label="Actual Expense (c)"
+                                placeholder="Actual Expense (C)"
+                                value={formData.actual_expense_total}
+                                onChange={handleExpFieldChange("actual_expense_total")}
+                                slotProps={{
+                                    input: { readOnly: true },
+                                }}
+                            />
+                        </FormControl>
+                        <FormControl required sx={formControl4rows} >
+                            <TextField
+                                type="number"
+                                id="txtBalanceExpense"
+                                label="Balance/Excess (A-C)"
+                                placeholder="Balance/Excess (A-C)"
+
+                                value={formData.balance_excess}
+                                onChange={handleExpFieldChange("balance_excess")}
+                                slotProps={{
+                                    input: { readOnly: true },
+                                }}
+                            />
+                        </FormControl>
+                    </Grid>
                 </fieldset>
 
                 {/* Supporting Documents */}
                 <fieldset >
                     <legend>Supporting Documents</legend>
                     <Grid container spacing={3}>
-                        <FormControl required sx={formControl2rows} >
+                        <FormControl sx={formControl2rows} >
                             <FileUpload
                                 label="Upload Bills"
                                 multiple={true}
                                 accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.png"
                                 onFilesChange={handleFiles}
+                                required
+
                             />
                             <box>
                                 {Number(formData.proposal) === 2 && attachmentError && (
@@ -1642,6 +1867,20 @@ export default function Settlement() {
                                 onChange={handleExpFieldChange("remarks")}
                                 multiline
                                 rows={2}
+                                required
+                                error={
+                                    !expenseForm.remarks
+                                }
+
+                                sx={{
+                                        "& .MuiInputLabel-root": {
+                                            color: expenseForm.remarks ? "blue" : "red",
+                                        },
+                                        "& .MuiInputLabel-root.Mui-focused": {
+                                            color: expenseForm.remarks ? "blue" : "red",
+                                        },
+                                    }}
+                                
                             // slotProps={{
                             //     input: { readOnly: true },
                             // }}
@@ -1787,7 +2026,7 @@ export default function Settlement() {
                         Failed to Submit Settlement Proposal.
                     </Alert>
                 )}
-                
+
                 {/* Submit and Clear button */}
                 <Box
                     sx={{
@@ -1796,7 +2035,7 @@ export default function Settlement() {
                         mt: 2,  // optional top margin
                         justifyContent: "center",
                         alignItems: "center",
-                        }}
+                    }}
                 >
                     <Button
                         variant="contained"
@@ -1815,10 +2054,10 @@ export default function Settlement() {
                         Clear
                     </Button>
                 </Box>
-                
+
             </Box>
 
-            
+
 
         </SectionCard>
     );

@@ -567,8 +567,9 @@ export default function Settlement() {
 
     // event handler for form submit
     const handleSubmit = async (event) => {
-        event.preventDefault;
+        event.preventDefault();
         setSubmitSuccess(false);
+        setDisableSubmit(true);
 
         // Set Status based on Approve or Reject
         let  s_id = 0;
@@ -626,9 +627,9 @@ export default function Settlement() {
             }));
 
             // // window.location.reload();
-            // setTimeout(() => {
-            //     window.location.reload();
-            // }, 1000);
+            setTimeout(() => {
+                window.location.reload();
+            }, 5000);
             
         } catch (error) {
             console.error(error);

@@ -1863,21 +1863,21 @@ export default function Settlement() {
                                 label="Remarks"
                                 placeholder="Remarks"
                                 id="txtRemarks"
-                                value={expenseForm.remarks}
-                                onChange={handleExpFieldChange("remarks")}
+                                value={formData.remarks}
+                                onChange={handleFieldChange("remarks")}
                                 multiline
                                 rows={2}
                                 required
                                 error={
-                                    !expenseForm.remarks
+                                    !formData.remarks
                                 }
 
                                 sx={{
                                         "& .MuiInputLabel-root": {
-                                            color: expenseForm.remarks ? "blue" : "red",
+                                            color: formData.remarks ? "blue" : "red",
                                         },
                                         "& .MuiInputLabel-root.Mui-focused": {
-                                            color: expenseForm.remarks ? "blue" : "red",
+                                            color: formData.remarks ? "blue" : "red",
                                         },
                                     }}
                                 

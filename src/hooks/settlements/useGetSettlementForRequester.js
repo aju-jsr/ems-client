@@ -29,7 +29,7 @@ const useGetSettlementForRequester = (empId) => {
     rows,
     loading,
     error,
-    refresh: loadData,
+    loadData,
   };
 };
 

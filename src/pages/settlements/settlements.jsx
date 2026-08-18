@@ -147,6 +147,7 @@ export default function Settlement() {
     const {
         rows,
         loading,
+        loadData
     } = useGetSettlementForRequester(empId);
 
     // Calling Settlement by id
@@ -646,10 +647,12 @@ export default function Settlement() {
                     prev.settlement_no,
             }));
 
-            // window.location.reload();
-            setTimeout(() => {
-                window.location.reload();
-            }, 10000);
+           await loadData(); // Refresh the settlements list after successful submission
+
+            // // window.location.reload();
+            // setTimeout(() => {
+            //     window.location.reload();
+            // }, 10000);
 
         } catch (error) {
             console.error(error);

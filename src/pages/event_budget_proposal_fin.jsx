@@ -288,7 +288,7 @@ export default function EventInformation() {
         setisAdvamount(false);
       }
 
-      window.location.reload();
+      await loadData(); // Refresh the settlements list after successful submission
           
     } catch (error) {
       console.error(error);
@@ -304,6 +304,7 @@ export default function EventInformation() {
   const {
     rows,
     loading,
+    loadData,
   } = useEventBudgetProposalsListForFinance(empId);
   // 0 is login emp id, need to pass runtime when login functionlaty created 
 
@@ -318,8 +319,44 @@ export default function EventInformation() {
     0
 );
 
+const initialFormData = {
+    requestNo: "EBP-",
+    proposal:"",
+    partyName:"",
+    billDetails:"",
+    eventName: "",
+    status: "Draft",
+    unit: "",
+    eventStartDate: null,
+    eventEndDate: null,
+    schoolId: "",
+    departmentId: "",
+    headName: "",
+    employeeId: "",
+    employeeName: "",
+    financialYear: "",
+    budgetDetails: "",
+    totalBudgetAmount: "",
+    advancePayment: "",
+    advancePaymentDueDate: null,
+    accountHolderName: "",
+    accountNumber: "",
+    ifscCode: "",
+    bankName: "",
+    branch: "",
+    accountType: "",
+    attachments: "",
+    approverremarks:"",
+    approvedamount: "",
+    finapprovedamount: "",
+    financeemarks: ""
+  };
+  
   const onRowSelected = async (Selrow) => {
     
+    setFormData(initialFormData);
+    setisapproved(false);
+    setisrejeted(false);
 
     const response = await getEventBudgetProposalsAttachment(Selrow.id);
     setShowFileUpload(false);
@@ -1380,43 +1417,65 @@ export default function EventInformation() {
         <Grid container spacing={3}>
           {/* Finance Remarks */}
           <FormControl sx={formControl2rows}>
-            <TextField
-              label="Finance Remarks"
-              placeholder="Finance Remarks"
-              value={formData.financeemarks}
-              multiline
-              rows={2}
-              required
-              onChange={handleFieldChange("financeemarks")}
-              
-            />
+              <TextField
+                label="Finance Remarks"
+                placeholder="Finance Remarks"
+                value={formData.financeemarks}
+                multiline
+                rows={2}
+                required
+                error={
+                  !formData.financeemarks
+                }
+                sx={{
+                  "& .MuiInputLabel-root": {
+                    color: formData.financeemarks ? "blue" : "red",
+                  },
+                  "& .MuiInputLabel-root.Mui-focused": {
+                    color: formData.financeemarks ? "blue" : "red",
+                  },
+                }}
+                onChange={handleFieldChange("financeemarks")}
+
+              />
           </FormControl>
           <FormControl sx={formControl2rows}>
-            <TextField
-              label="Approved Amount by Finance"
-              placeholder="Approved Amount by Finance"
-              type="number"
-              value={formData.finapprovedamount}
-              required
-              onChange={handleFieldChange("finapprovedamount")}
-              onKeyDown={(e) => {
-                if (["e", "E", "+", "-", "ArrowUp", "ArrowDown"].includes(e.key)) {
-                  e.preventDefault();
+              <TextField
+                label="Approved Amount by Finance"
+                placeholder="Approved Amount by Finance"
+                type="number"
+                value={formData.finapprovedamount}
+                required
+                error={
+                  !formData.finapprovedamount
                 }
-              }}
+                sx={{
+                  "& .MuiInputLabel-root": {
+                    color: formData.finapprovedamount ? "blue" : "red",
+                  },
+                  "& .MuiInputLabel-root.Mui-focused": {
+                    color: formData.finapprovedamount ? "blue" : "red",
+                  },
+                }}
+                onChange={handleFieldChange("finapprovedamount")}
+                onKeyDown={(e) => {
+                  if (["e", "E", "+", "-", "ArrowUp", "ArrowDown"].includes(e.key)) {
+                    e.preventDefault();
+                  }
+                }}
 
-              onWheel={(e) => e.target.blur()}
+                onWheel={(e) => e.target.blur()}
                 sx={{
                   "& input[type=number]": {
                     MozAppearance: "textfield",
                   },
                   "& input[type=number]::-webkit-outer-spin-button, & input[type=number]::-webkit-inner-spin-button":
-                    {
-                      WebkitAppearance: "none",
-                      margin: 0,
-                    },
+                  {
+                    WebkitAppearance: "none",
+                    margin: 0,
+                  },
                 }}
-            />
+              />
           </FormControl>
 
         </Grid>

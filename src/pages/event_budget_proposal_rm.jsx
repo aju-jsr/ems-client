@@ -226,71 +226,6 @@ export default function EventInformation() {
         remarks: formData.approverremarks
       }
 
-    // if (attachments.length === 0 && formData.proposal === 2) {
-    //   setAttachmentError(true);
-    //     alert("Please upload Bills.");
-    //     return;
-    // }else{
-    //   setAttachmentError(false);
-    // }
-    
-
-    // const attachmentList = attachments.map((file, index) => ({
-    //   sequence: index + 1,
-    //   fileName: file.name,
-    //   fileSize: file.size,
-    //   fileType: file.type,
-    // }));
-
-    // const proposalJson = {
-
-    //     proposal_id: formData.proposal,
-    //     party_name: formData.partyName,
-    //     bill_details: formData.billDetails,
-    //     event_name: formData.eventName,
-    //     status_id: 2,
-    //     unit_id: formData.unit,
-    //     event_start_date: formatDate(formData.eventStartDate),
-    //     event_end_date: formatDate(formData.eventEndDate),
-    //     school_id: formData.schoolId,
-    //     department_id: formData.departmentId,
-    //     name_of_head: formData.headName,
-    //     req_emp_id: formData.employeeId,
-    //     req_emp_name: formData.employeeName,
-    //     financial_year: getFinancialYear(),
-    //     details: formData.budgetDetails,
-    //     budget_amount: formData.totalBudgetAmount,
-    //     adv_payment: 
-    //       formData.advancePayment &&
-    //       formData.advancePayment !== ""
-    //         ? formData.advancePayment
-    //         : null,
-    //     // adv_payment_due_date: formatDate(formData.advancePaymentDueDate),
-    //     adv_payment_due_date:
-    //       formData.advancePaymentDueDate &&
-    //       formData.advancePaymentDueDate !== ""
-    //         ? formatDate(formData.advancePaymentDueDate)
-    //         : null,
-    //     acc_holder_name: formData.accountHolderName,
-    //     acc_number: formData.accountNumber,
-    //     ifsc_code: formData.ifscCode,
-    //     bank_name: formData.bankName,
-    //     branch: formData.branch,
-    //     // acc_type_id: formData.accountType
-    //     acc_type_id: 
-    //       formData.accountType &&
-    //       formData.accountType !== ""
-    //         ? formData.accountType
-    //         : null,
-
-    //     attachments: attachmentList
-        
-    // };
-
-    // const jsonText = JSON.stringify(proposalJson);
-    // setSubmittedJson(jsonText);
-
-
     try{
       const response = await patchEventBudgetProposal(proposalJson);
       setProposalResponse(response);
@@ -301,11 +236,13 @@ export default function EventInformation() {
         setisapproved(false);
         setisrejeted(true);
       }
+
+      await loadData(); // Refresh the settlements list after successful submission
       
-      // window.location.reload();
-      setTimeout(() => {
-        window.location.reload();
-      }, 1000);
+      // // window.location.reload();
+      // setTimeout(() => {
+      //   window.location.reload();
+      // }, 1000);
     
     } catch (error) {
       console.error(error);
@@ -322,11 +259,15 @@ export default function EventInformation() {
    const {
     rows,
     loading,
+    loadData,
   } = useEventBudgetProposalsListForApprover(empId);
   // 1273 is login emp id, need to pass runtime when login functionlaty created 
 
 
   const onRowSelected = async (Selrow) => {
+    setFormData(initialFormData);
+    setisapproved(false);
+    setisrejeted(false);
     const response = await getEventBudgetProposalsAttachment(Selrow.id);
     setFileList(response.data);
     rows.map((row) => {
@@ -478,6 +419,39 @@ export default function EventInformation() {
         width: 100,
       },
     ];
+
+   const initialFormData = {
+    requestNo: "EBP-",
+    proposal:"",
+    partyName:"",
+    billDetails:"",
+    eventName: "",
+    status: "Draft",
+    unit: "",
+    eventStartDate: null,
+    eventEndDate: null,
+    schoolId: "",
+    departmentId: "",
+    headName: "",
+    employeeId: "",
+    employeeName: "",
+    financialYear: "",
+    budgetDetails: "",
+    totalBudgetAmount: "",
+    advancePayment: "",
+    advancePaymentDueDate: null,
+    accountHolderName: "",
+    accountNumber: "",
+    ifscCode: "",
+    bankName: "",
+    branch: "",
+    accountType: "",
+    attachments: "",
+    approverremarks:"",
+    approvedamount: "",
+    finapprovedamount: "",
+    financeemarks: ""
+  };
 
   return (
     
@@ -1274,16 +1248,27 @@ export default function EventInformation() {
         <Grid container spacing={3}>
           {/* Approver Remarks */}
           <FormControl sx={formControl2rows}>
-            <TextField
-              label="Approver Remarks"
-              placeholder="Approver Remarks"
-              value={formData.approverremarks}
-              multiline
-              rows={2}
-              required
-              onChange={handleFieldChange("approverremarks")}
-              
-            />
+              <TextField
+                label="Approver Remarks"
+                placeholder="Approver Remarks"
+                value={formData.approverremarks}
+                multiline
+                rows={2}
+                required
+                error={
+                  !formData.approverremarks
+                }
+                sx={{
+                  "& .MuiInputLabel-root": {
+                    color: formData.approverremarks ? "blue" : "red",
+                  },
+                  "& .MuiInputLabel-root.Mui-focused": {
+                    color: formData.approverremarks ? "blue" : "red",
+                  },
+                }}
+                onChange={handleFieldChange("approverremarks")}
+
+              />
           </FormControl>
           <FormControl sx={formControl2rows}>
             <TextField
@@ -1292,6 +1277,17 @@ export default function EventInformation() {
               type="number"
               value={formData.approvedamount}
               required
+                error={
+                  !formData.approvedamount
+                }
+                sx={{
+                  "& .MuiInputLabel-root": {
+                    color: formData.approvedamount ? "blue" : "red",
+                  },
+                  "& .MuiInputLabel-root.Mui-focused": {
+                    color: formData.approvedamount ? "blue" : "red",
+                  },
+                }}
               onChange={handleFieldChange("approvedamount")}
               onKeyDown={(e) => {
                 if (["e", "E", "+", "-", "ArrowUp", "ArrowDown"].includes(e.key)) {

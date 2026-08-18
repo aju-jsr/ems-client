@@ -34,7 +34,7 @@ const useEventBudgetProposalsListForRequester = (empId) => {
     rows,
     loading,
     error,
-    refresh: loadData,
+    loadData,
   };
 };
 

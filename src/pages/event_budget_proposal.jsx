@@ -319,10 +319,13 @@ setHeaderTitle("Budget Proposal");
           response[0]?.request_no ||
           prev.requestNo,
       }));
-      // window.location.reload();
-      setTimeout(() => {
-        window.location.reload();
-      }, 10000);
+
+      await loadData(); // Refresh the settlements list after successful submission
+      
+      // // window.location.reload();
+      // setTimeout(() => {
+      //   window.location.reload();
+      // }, 10000);
     } catch (error) {
       console.error(error);
       setSubmitSuccess(false);
@@ -334,10 +337,9 @@ setHeaderTitle("Budget Proposal");
   const {
     rows,
     loading,
+    loadData,
   } = useEventBudgetProposalsListForRequester(empId);
-  // 1086 is login emp id, need to pass runtime when login functionlaty created 
-  // useEventBudgetProposalsList(0) => parameter 0 to get the all Proposal type Advance and Bills
-
+  
   const onRowSelected = async (Selrow) => {
     const response = await getEventBudgetProposalsAttachment(Selrow.id);
     // setAttachments(response.data)
@@ -746,13 +748,27 @@ setHeaderTitle("Budget Proposal");
               <Grid container spacing={3}>
                   {/* proposal Drop down */}
                 <FormControl required sx={formControl3rows} >
-                  <InputLabel id="lblproposal">Choose Proposal For</InputLabel>
+                  <InputLabel id="lblproposal" sx={{
+                    color: formData.proposal
+                      ? "blue"
+                      : "red",
+
+                    "&.Mui-focused": {
+                      color: formData.proposal
+                        ? "blue"
+                        : "red",
+                    },
+                  }}
+                  >Choose Proposal For</InputLabel>
                   <Select
                     labelId="lblproposal"
                     id="ddlproposal"
                     value={formData.proposal}
                     label="Choose Proposal For"
-                    
+                    required
+                    error={
+                      !formData.proposal
+                    }
                     onChange={(e) => {
                       handleFieldChange("proposal")(e);
                     }}
@@ -794,6 +810,14 @@ setHeaderTitle("Budget Proposal");
                       slotProps={{
                         input: { readOnly: true },
                       }}
+                    sx={{
+                      "& .MuiInputLabel-root": {
+                        color: formData.status ? "blue" : "red",
+                      },
+                      "& .MuiInputLabel-root.Mui-focused": {
+                        color: formData.status ? "blue" : "red",
+                      },
+                    }}
                     />
                 </FormControl>
                 <FormControl sx={formControl3rows}>
@@ -803,6 +827,14 @@ setHeaderTitle("Budget Proposal");
                     slotProps={{
                       input: { readOnly: true },
                     }}
+                      sx={{
+                      "& .MuiInputLabel-root": {
+                        color: formData.requestNo ? "blue" : "red",
+                      },
+                      "& .MuiInputLabel-root.Mui-focused": {
+                        color: formData.requestNo ? "blue" : "red",
+                      },
+                    }}
                   />
                 </FormControl>
               </Grid>
@@ -811,12 +843,23 @@ setHeaderTitle("Budget Proposal");
                 <Grid id="grdBillsProposal"  container spacing={3}>
                   {/* Party Name */}
                   <FormControl sx={formControl3rows}>
-                    <TextField
-                        label="Party Name"
-                        value={formData.partyName}
-                        required
-                        onChange={handleFieldChange("partyName")}
-                      />
+                  <TextField
+                    label="Party Name"
+                    value={formData.partyName}
+                    required
+                    error={
+                      !formData.partyName
+                    }
+                    sx={{
+                      "& .MuiInputLabel-root": {
+                        color: formData.partyName ? "blue" : "red",
+                      },
+                      "& .MuiInputLabel-root.Mui-focused": {
+                        color: formData.partyName ? "blue" : "red",
+                      },
+                    }}
+                    onChange={handleFieldChange("partyName")}
+                  />
                   </FormControl>
                   {/* Bills Details */}
                   <FormControl sx={formControl3rows}>
@@ -824,6 +867,17 @@ setHeaderTitle("Budget Proposal");
                       label="Bills Details"
                       placeholder="Filled by Requester"
                       required
+                    error={
+                      !formData.billDetails
+                    }
+                    sx={{
+                      "& .MuiInputLabel-root": {
+                        color: formData.billDetails ? "blue" : "red",
+                      },
+                      "& .MuiInputLabel-root.Mui-focused": {
+                        color: formData.billDetails ? "blue" : "red",
+                      },
+                    }}
                       multiline
                       rows={5}
                       value={formData.billDetails}
@@ -863,12 +917,24 @@ setHeaderTitle("Budget Proposal");
                 {/* Event Name */}
                 <FormControl sx={formControl3rows}>
                   <TextField
-                      label="Event Name"
-                      placeholder="Filled by Requester"
-                      required
-                      value={formData.eventName}
-                      onChange={handleFieldChange("eventName")}
-                    />
+                    label="Event Name"
+                    placeholder="Filled by Requester"
+                    required
+                    error={
+                      !formData.eventName
+                    }
+                    sx={{
+                      "& .MuiInputLabel-root": {
+                        color: formData.eventName ? "blue" : "red",
+                      },
+                      "& .MuiInputLabel-root.Mui-focused": {
+                        color: formData.eventName ? "blue" : "red",
+                      },
+                    }}
+                    value={formData.eventName}
+                    onChange={handleFieldChange("eventName")}
+
+                  />
                 </FormControl>
                 
               
@@ -879,12 +945,26 @@ setHeaderTitle("Budget Proposal");
               <Grid container spacing={3}>
                 {/* Unit Drop down */}
                 <FormControl sx={formControl3rows} >
-                  <InputLabel id="lblUnit" required>Choose Unit</InputLabel>
+                  <InputLabel id="lblUnit" required sx={{
+                    color: formData.unit
+                      ? "blue"
+                      : "red",
+
+                    "&.Mui-focused": {
+                      color: formData.unit
+                        ? "blue"
+                        : "red",
+                    },
+                  }}
+                  >Choose Unit</InputLabel>
                   <Select
                     labelId="lblUnit"
                     id="ddlUnit"
                     value={formData.unit}
                     required
+                    error={
+                      !formData.unit  
+                    }
                     label="Choose Unit"
                     onChange={handleFieldChange("unit")}
                     // Controls the structural height of the selector input box
@@ -925,8 +1005,22 @@ setHeaderTitle("Budget Proposal");
                     value={formData.eventStartDate}
                     onChange={handleDateChange("eventStartDate")}
                     slotProps={{
-                      textField: { fullWidth: true, 
-                         required: true
+                      textField: {
+                        fullWidth: true,
+                        required: true,
+                        error: !formData.eventStartDate,
+                        sx: {
+                          "& .MuiInputLabel-root": {
+                            color: formData.eventStartDate
+                              ? "blue"
+                              : "red",
+                          },
+                          "& .MuiInputLabel-root.Mui-focused": {
+                            color: formData.eventStartDate
+                              ? "blue"
+                              : "red",
+                          },
+                        },
                        }
                      
                     }}
@@ -944,6 +1038,19 @@ setHeaderTitle("Budget Proposal");
                       textField: { 
                         fullWidth: true, 
                         required: true,
+                        error: !formData.eventEndDate,
+                        sx: {
+                          "& .MuiInputLabel-root": {
+                            color: formData.eventEndDate
+                              ? "blue"
+                              : "red",
+                          },
+                          "& .MuiInputLabel-root.Mui-focused": {
+                            color: formData.eventEndDate
+                              ? "blue"
+                              : "red",
+                          },
+                        },
                         
                        }
                     }}
@@ -954,13 +1061,26 @@ setHeaderTitle("Budget Proposal");
               <Grid container spacing={3}>
                 
                 {/* School Drop down */}
-                <FormControl sx={formControl3rows}>
-                  <InputLabel id="lblSchool" required>Choose School</InputLabel>
+                <FormControl required sx={formControl3rows}>
+                  <InputLabel id="lblSchool" required sx={{
+                    color: formData.schoolId
+                      ? "blue"
+                      : "red",
+
+                    "&.Mui-focused": {
+                      color: formData.schoolId
+                        ? "blue"
+                        : "red",
+                    },
+                  }}>Choose School</InputLabel>
                   <Select
                     labelId="lblSchool"
                     id="ddlSchool"
                     value={formData.schoolId}
                     required
+                    error={
+                      !formData.schoolId
+                    }
                     label="Choose School"
                     onChange={(e) => {
                       const schoolId = Number(e.target.value);
@@ -1005,12 +1125,25 @@ setHeaderTitle("Budget Proposal");
                 </FormControl>
                 {/* Department Drop down */}
                 <FormControl sx={formControl3rows}>
-                  <InputLabel id="lbldept" required>Choose Department</InputLabel>
+                  <InputLabel id="lbldept" required sx={{
+                    color: formData.departmentId
+                      ? "blue"
+                      : "red",
+
+                    "&.Mui-focused": {
+                      color: formData.departmentId
+                        ? "blue"
+                        : "red",
+                    },
+                  }}>Choose Department</InputLabel>
                   <Select
                     labelId="lbldept"
                     id="ddlDept"
                     value={formData.departmentId}
                     required
+                    error={
+                      !formData.departmentId
+                    }
                     label="Choose Department"
                     onChange={(e) => {
                       const deptId = Number(e.target.value);
@@ -1071,6 +1204,14 @@ setHeaderTitle("Budget Proposal");
                     slotProps={{
                       input: { readOnly: true },
                     }}
+                    sx={{
+                      "& .MuiInputLabel-root": {
+                        color: formData.headName ? "blue" : "red",
+                      },
+                      "& .MuiInputLabel-root.Mui-focused": {
+                        color: formData.headName ? "blue" : "red",
+                      },
+                    }}
                   />
                 </FormControl>
               </Grid>
@@ -1086,6 +1227,14 @@ setHeaderTitle("Budget Proposal");
                     value={formData.employeeId}
                     slotProps={{
                       input: { readOnly: true },
+                    }}
+                    sx={{
+                      "& .MuiInputLabel-root": {
+                        color: formData.employeeId ? "blue" : "red",
+                      },
+                      "& .MuiInputLabel-root.Mui-focused": {
+                        color: formData.employeeId ? "blue" : "red",
+                      },
                     }}
                   />
                   {/* <Autocomplete
@@ -1124,6 +1273,14 @@ setHeaderTitle("Budget Proposal");
                     slotProps={{
                       input: { readOnly: true },
                     }}
+                    sx={{
+                      "& .MuiInputLabel-root": {
+                        color: formData.employeeName ? "blue" : "red",
+                      },
+                      "& .MuiInputLabel-root.Mui-focused": {
+                        color: formData.employeeName ? "blue" : "red",
+                      },
+                    }}
                   />
                 </FormControl> 
                 {/* Financial Year Text Box */}
@@ -1136,7 +1293,14 @@ setHeaderTitle("Budget Proposal");
                     slotProps={{
                       input: { readOnly: true },
                     }}
-                                  
+                    sx={{
+                      "& .MuiInputLabel-root": {
+                        color: "blue",
+                      },
+                      "& .MuiInputLabel-root.Mui-focused": {
+                        color: "blue",
+                      },
+                    }}       
                   />
                 </FormControl> 
               </Grid>
@@ -1151,15 +1315,27 @@ setHeaderTitle("Budget Proposal");
         
         <Grid container spacing={3}>
           {/* Details */}
-          <FormControl sx={formControl2rows}>
-            <TextField
-              label="Details"
-              placeholder="Filled by Requester"
-              multiline
-              rows={5}
-              value={formData.budgetDetails}
-              onChange={handleFieldChange("budgetDetails")}
-            />
+          <FormControl required sx={formControl2rows}>
+                <TextField
+                  label="Details"
+                  placeholder="Filled by Requester"
+                  multiline
+                  rows={5}
+                  value={formData.budgetDetails}
+                  onChange={handleFieldChange("budgetDetails")}
+                  required
+                  error={
+                    !formData.budgetDetails
+                  }
+                  sx={{
+                    "& .MuiInputLabel-root": {
+                      color: formData.budgetDetails ? "blue" : "red",
+                    },
+                    "& .MuiInputLabel-root.Mui-focused": {
+                      color: formData.budgetDetails ? "blue" : "red",
+                    },
+                  }}
+                />
           </FormControl>
           {/* Total Budget Amount */}
           <FormControl sx={formControl2rows}>
@@ -1168,6 +1344,17 @@ setHeaderTitle("Budget Proposal");
               label="Total Budget Amount"
               placeholder="Total Budget Amount"
               required
+                  error={
+                    !formData.totalBudgetAmount
+                  }
+                  sx={{
+                    "& .MuiInputLabel-root": {
+                      color: formData.totalBudgetAmount ? "blue" : "red",
+                    },
+                    "& .MuiInputLabel-root.Mui-focused": {
+                      color: formData.totalBudgetAmount ? "blue" : "red",
+                    },
+                  }}
               value={formData.totalBudgetAmount}
               onChange={handleFieldChange("totalBudgetAmount")}
               onKeyDown={(e) => {

@@ -149,6 +149,7 @@ export default function Settlement() {
     const {
         rows,
         loading,
+        loadData,
     } = useGetSettlementForApprover(empId);
 
     // Calling Settlement by id
@@ -618,18 +619,15 @@ export default function Settlement() {
             console.log("API Response:", response);
             setSettlementResponse(response);
             setSubmitSuccess(true);
-            alert(msg);
-            setFormData((prev) => ({
-                ...prev,
-                settlement_no:
-                response[0]?.settlement_no ||
-                prev.settlement_no,
-            }));
+            // alert(msg);
+            // setFormData((prev) => ({
+            //     ...prev,
+            //     settlement_no:
+            //     response[0]?.settlement_no ||
+            //     prev.settlement_no,
+            // }));
 
-            // // window.location.reload();
-            setTimeout(() => {
-                window.location.reload();
-            }, 5000);
+            await loadData(); // Refresh the settlements list after successful submission
             
         } catch (error) {
             console.error(error);
@@ -1836,19 +1834,19 @@ export default function Settlement() {
                 </fieldset>
                 {submitSuccess && (
                     <Alert severity="success" sx={{ mt: 2 }}>
-                        <strong>Settlement proposal Approved successfully.</strong>
+                        <strong>Settlement Approved successfully.</strong>
 
-                        <br />
+                        {/* <br />
 
                         settlement_no:{" "}
-                        {settlementResponse[0]?.settlement_no}
+                        {settlementResponse[0]?.settlement_no} */}
 
                     </Alert>
                 )}
 
                 {settlementSubmitError && (
                     <Alert severity="error" sx={{ mt: 2 }}>
-                        Failed to Approve Settlement Proposal.
+                        Failed to Approve Settlement.
                     </Alert>
                 )}
                 

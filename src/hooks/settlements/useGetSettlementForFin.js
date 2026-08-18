@@ -29,7 +29,7 @@ const useGetSettlementForFin = () => {
     rows,
     loading,
     error,
-    // refresh: loadData,
+    loadData,
   };
 };
 

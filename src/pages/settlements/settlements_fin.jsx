@@ -157,6 +157,7 @@ export default function Settlement() {
     const {
         rows,
         loading,
+        loadData,
     } = useGetSettlementForFin();
 
     
@@ -655,36 +656,39 @@ export default function Settlement() {
         }
 
         try{
+            let response;
             if (action === "approve" || action === "reject"){
-                const response = await settlementPATCH(settlementJson);
+                response = await settlementPATCH(settlementJson);
                 // const response = await submitSettlement(settlementJson);
                 setSubmitSuccess(true);
                 // console.log(submitSuccess);
                 console.log("API Response:", response);
                 setSettlementResponse(response);
-                alert(msg);
+                // alert(msg);
             }else if(action === "submit"){
-                const response = await submitSettlementAmount(AmtJson);
+                response = await submitSettlementAmount(AmtJson);
                 setSubmitSuccess(response);
                 setSettlementAmount(true);
-                alert("Payment Add");
+                // alert("Payment Add");
             }
             
             
             
             
 
-            setFormData((prev) => ({
-                ...prev,
-                settlement_no:
-                response[0]?.settlement_no ||
-                prev.settlement_no,
-            }));
+            // setFormData((prev) => ({
+            //     ...prev,
+            //     settlement_no:
+            //     response?.settlement_no ||
+            //     prev.settlement_no,
+            // }));
 
-            // window.location.reload();
-            setTimeout(() => {
-                window.location.reload();
-            }, 5000);
+            await loadData(); // Refresh the settlements list after successful submission
+
+            // // window.location.reload();
+            // setTimeout(() => {
+            //     window.location.reload();
+            // }, 5000);
             
         } catch (error) {
             console.error(error);
@@ -2196,10 +2200,10 @@ export default function Settlement() {
                     <Alert severity="success" sx={{ mt: 2 }}>
                         <strong>Settlement proposal Approved successfully.</strong>
 
-                        <br />
+                        {/* <br />
 
                         settlement_no:{" "}
-                        {settlementResponse[0]?.settlement_no}
+                        {settlementResponse[0]?.settlement_no} */}
 
                     </Alert>
                 )}

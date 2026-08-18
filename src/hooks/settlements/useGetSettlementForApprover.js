@@ -29,7 +29,7 @@ const useGetSettlementForApprover = (empId) => {
     rows,
     loading,
     error,
-    refresh: loadData,
+    loadData,
   };
 };
 

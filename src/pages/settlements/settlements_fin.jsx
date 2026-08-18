@@ -68,6 +68,7 @@ import { getProposaReqNo } from "../../services/proposals_req_no_Service.js";
 import { getCheckSettlement } from "../../services/settlements/checksettlementService.js"
 
 import usePaymentMode from "../../hooks/usePaymentMode";
+import { formatIndianAmount } from "../../utils/amountFormatter.js";
 
 
 export default function Settlement() {
@@ -199,6 +200,17 @@ export default function Settlement() {
             if (row.id === Selrow.id) {
                 selected_status = row.status_name;
                 setReqId(Selrow.id);
+                const fin_approved_amount_formated = formatIndianAmount(row.fin_approved_amount === null ||
+                        row.fin_approved_amount === undefined ||
+                        row.fin_approved_amount === ""
+                            ? ""
+                            : row.fin_approved_amount);
+                const rm_approved_amt_formated = formatIndianAmount(row.approved_amount === null ||
+                        row.approved_amount === undefined ||
+                        row.approved_amount === ""
+                            ? ""
+                            : row.approved_amount);
+
                 setFormData((prev) => ({
                     ...prev,
                     settlement_no: row.settlement_no,
@@ -215,7 +227,6 @@ export default function Settlement() {
                         ? dayjs(row.event_start_date)
                         : null,
                     event_end_date: 
-                    // row.event_end_date,
                         row.event_end_date
                         ? dayjs(row.event_end_date)
                         : null,
@@ -246,16 +257,11 @@ export default function Settlement() {
                     acc_type_id: row.acc_type_id,
                     approved_by: row.approved_by,
                     approved_date: row.approved_date,
-                    approved_amount: row.approved_amount,
+                    approved_amount: rm_approved_amt_formated,
                     approved_remarks: row.approved_remarks,
                     fin_approved_by: row.fin_approved_by,
                     fin_approved_date: row.fin_approved_date,
-                    fin_approved_amount: 
-                        row.fin_approved_amount === null ||
-                        row.fin_approved_amount === undefined ||
-                        row.fin_approved_amount === ""
-                            ? ""
-                            : row.fin_approved_amount,
+                    fin_approved_amount: fin_approved_amount_formated,
                     fin_remarks: row.fin_remarks
                 }));
             }
@@ -428,23 +434,7 @@ export default function Settlement() {
             type: "singleSelect",
             valueOptions: ["Y", "N"],
         },
-        // {
-        //     field: "actions",
-        //     headerName: "Action",
-        //     width: 100,
-        //     sortable: false,
-        //     filterable: false,
-        //     renderCell: (params) => (
-        //         <Button
-        //             variant="contained"
-        //             color="error"
-        //             size="small"
-        //             onClick={() => handleDeleteExpense(params.row.id)}
-        //         >
-        //             Delete
-        //         </Button>
-        //     ),
-        // },
+        
     ];
 
     // Expenses Data save to Grid
@@ -640,8 +630,10 @@ export default function Settlement() {
             sub_settlement_no: formData.sub_settlement_no,
             status_id: s_id,
             approved_by: JSON.parse(localStorage.getItem("user"))?.empId,
-            // Note replace 1273 with user login emp id
-            approved_amount: formData.fin_approved_amount,
+            
+            approved_amount: Number(
+                formData.fin_approved_amount?.replace(/,/g, "") || 0
+            ),
             approved_remarks: formData.fin_remarks
         }
 
@@ -659,42 +651,21 @@ export default function Settlement() {
             let response;
             if (action === "approve" || action === "reject"){
                 response = await settlementPATCH(settlementJson);
-                // const response = await submitSettlement(settlementJson);
                 setSubmitSuccess(true);
-                // console.log(submitSuccess);
                 console.log("API Response:", response);
                 setSettlementResponse(response);
-                // alert(msg);
             }else if(action === "submit"){
                 response = await submitSettlementAmount(AmtJson);
                 setSubmitSuccess(response);
                 setSettlementAmount(true);
-                // alert("Payment Add");
             }
-            
-            
-            
-            
-
-            // setFormData((prev) => ({
-            //     ...prev,
-            //     settlement_no:
-            //     response?.settlement_no ||
-            //     prev.settlement_no,
-            // }));
 
             await loadData(); // Refresh the settlements list after successful submission
-
-            // // window.location.reload();
-            // setTimeout(() => {
-            //     window.location.reload();
-            // }, 5000);
             
         } catch (error) {
             console.error(error);
             setSubmitSuccess(false);
         }
-
 
     };
 
@@ -895,6 +866,15 @@ export default function Settlement() {
         },
         
     ];
+
+    const handleAmountChange = (field) => (e) => {
+        const formattedValue = formatIndianAmount(e.target.value);
+
+        setFormData((prev) => ({
+            ...prev,
+            [field]: formattedValue,
+        }));        
+    };
 
     
     
@@ -1915,7 +1895,7 @@ export default function Settlement() {
                             <TextField
                                 label="Approved Amount"
                                 placeholder="Approver Amount"
-                                type="number"
+                                type="text"
                                 value={formData.approved_amount}
                                 required
                                 onChange={handleFieldChange("approved_amount")}
@@ -1958,11 +1938,21 @@ export default function Settlement() {
                                 rows={2}
                                 required
                                 onChange={handleFieldChange("fin_remarks")}
-
+                                error={
+                                    !formData.fin_remarks
+                                }
+                                sx={{
+                                    "& .MuiInputLabel-root": {
+                                        color: formData.fin_remarks ? "blue" : "red",
+                                    },
+                                    "& .MuiInputLabel-root.Mui-focused": {
+                                        color: formData.fin_remarks ? "blue" : "red",
+                                    },
+                                }}
                             />
                         </FormControl>
                         <FormControl sx={formControl2rows}>
-                            <TextField
+                            {/* <TextField
                                 label="Finance Approved Amount"
                                 placeholder="Finance Approved Amount"
                                 type="number"
@@ -1974,9 +1964,17 @@ export default function Settlement() {
                                         e.preventDefault();
                                     }
                                 }}
-
                                 onWheel={(e) => e.target.blur()}
+                                error={
+                                    !formData.fin_approved_amount
+                                }
                                 sx={{
+                                    "& .MuiInputLabel-root": {
+                                        color: formData.fin_approved_amount ? "blue" : "red",
+                                    },
+                                    "& .MuiInputLabel-root.Mui-focused": {
+                                        color: formData.fin_approved_amount ? "blue" : "red",
+                                    },
                                     "& input[type=number]": {
                                         MozAppearance: "textfield",
                                     },
@@ -1986,7 +1984,50 @@ export default function Settlement() {
                                         margin: 0,
                                     },
                                 }}
+                            /> */}
+
+                            <TextField
+                                label="Finance Approved Amount"
+                                placeholder="Finance Approved Amount"
+                                type="text"
+                                value={formData.fin_approved_amount || ""}
+                                required
+                                onChange={handleAmountChange("fin_approved_amount")}
+
+                                onKeyDown={(e) => {
+                                    if (
+                                        [
+                                            "e",
+                                            "E",
+                                            "+",
+                                            "-",
+                                            "ArrowUp",
+                                            "ArrowDown",
+                                        ].includes(e.key)
+                                    ) {
+                                        e.preventDefault();
+                                    }
+                                }}
+
+                                onWheel={(e) => e.target.blur()}
+
+                                error={!formData.fin_approved_amount}
+
+                                sx={{
+                                    "& .MuiInputLabel-root": {
+                                        color: formData.fin_approved_amount
+                                            ? "blue"
+                                            : "red",
+                                    },
+
+                                    "& .MuiInputLabel-root.Mui-focused": {
+                                        color: formData.fin_approved_amount
+                                            ? "blue"
+                                            : "red",
+                                    },
+                                }}
                             />
+
                         </FormControl>
 
                     </Grid>

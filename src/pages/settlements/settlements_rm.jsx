@@ -1800,6 +1800,18 @@ export default function Settlement() {
                                 required
                                 onChange={handleFieldChange("approved_remarks")}
 
+                                error={
+                                    !formData.approved_remarks
+                                }
+                                sx={{
+                                    "& .MuiInputLabel-root": {
+                                        color: formData.approved_remarks ? "blue" : "red",
+                                    },
+                                    "& .MuiInputLabel-root.Mui-focused": {
+                                        color: formData.approved_remarks ? "blue" : "red",
+                                    },
+                                }}
+
                             />
                         </FormControl>
                         <FormControl sx={formControl2rows}>
@@ -1816,8 +1828,18 @@ export default function Settlement() {
                                     }
                                 }}
 
+                                error={
+                                    !formData.approved_amount
+                                }
+                                
                                 onWheel={(e) => e.target.blur()}
                                 sx={{
+                                    "& .MuiInputLabel-root": {
+                                        color: formData.approved_amount ? "blue" : "red",
+                                    },
+                                    "& .MuiInputLabel-root.Mui-focused": {
+                                        color: formData.approved_amount ? "blue" : "red",
+                                    },
                                     "& input[type=number]": {
                                         MozAppearance: "textfield",
                                     },

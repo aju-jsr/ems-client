@@ -60,7 +60,7 @@ import useSettlementPOST from "../../hooks/settlements/useSettlementPOST.js"
 import { getSettlement } from "../../services/settlements/getSettlementById_Service.js"
 import { getProposaReqNo } from "../../services/proposals_req_no_Service.js";
 import { getCheckSettlement } from "../../services/settlements/checksettlementService.js"
-
+import { formatIndianAmount } from "../../utils/amountFormatter.js";
 
 export default function Settlement() {
     // Set Form Title
@@ -74,9 +74,6 @@ export default function Settlement() {
 
     const currentDate = new Date();
 
-    // const TodayformattedDate = String(currentDate.getDate()).padStart(2, "0") + "-" +
-    //                     String(currentDate.getMonth() + 1).padStart(2, "0") + "-" +
-    //                   currentDate.getFullYear();
     const TodayformattedDate = `${currentDate.getFullYear()}-${String(
         currentDate.getMonth() + 1
     ).padStart(2, "0")}-${String(currentDate.getDate()).padStart(2, "0")}`;
@@ -150,14 +147,6 @@ export default function Settlement() {
         loadData
     } = useGetSettlementForRequester(empId);
 
-    // Calling Settlement by id
-    // const [settlementid, setSettlementid] = useState("");
-    // const {
-    //     SettlementRows,
-    //     Settlementloading,
-    // } = useSettlement(settlementid);
-
-
     // get the Settlements Type list from DB using Hook
     const { settlementtype } = useSettlementType();
 
@@ -182,11 +171,20 @@ export default function Settlement() {
         setDisableSubmit(true);
         const response = await getSettlement(Selrow.id);
 
-        setExpenseRows(response.actualExpenses);
+        const updatedExpenseRows = (response.actualExpenses ?? []).map((row) => ({
+            ...row,
+            amount: formatIndianAmount(row.amount),
+        }));
+
+        setExpenseRows(updatedExpenseRows);
+
+
+
         setFileList(response.supportingDocuments);
 
         response.settlement.map((row) => {
             if (row.id === Selrow.id) {
+                const approved_amount_formattedValue = formatIndianAmount(row.approved_amount);
                 setFormData((prev) => ({
                     ...prev,
                     settlement_no: row.settlement_no,
@@ -234,7 +232,7 @@ export default function Settlement() {
                     acc_type_id: row.acc_type_id,
                     approved_by: row.approved_by,
                     approved_date: row.approved_date,
-                    approved_amount: row.approved_amount,
+                    approved_amount: approved_amount_formattedValue,
                     approved_remarks: row.approved_remarks,
                     fin_approved_by: row.fin_approved_by,
                     fin_approved_date: row.fin_approved_date,
@@ -435,10 +433,20 @@ export default function Settlement() {
     const formatDate = (value) => value ? dayjs(value).format("YYYY-MM-DD") : "";
 
     const handleExpFieldChange = (field) => (event) => {
-        setExpenseForm((prevData) => ({
-            ...prevData,
-            [field]: event.target.value,
-        }));
+        if (field === "amount" || field === "actual_expense_total") {
+            const formattedValue = formatIndianAmount(event.target.value);
+
+            setExpenseForm((prev) => ({
+                ...prev,
+                [field]: formattedValue,
+            }));
+        } else {
+            setExpenseForm((prevData) => ({
+                ...prevData,
+                [field]: event.target.value,
+            }));
+        }
+        
     }
 
     const handleExpDateChange = (field) => (value) => {
@@ -461,6 +469,9 @@ export default function Settlement() {
         }
         else {
             expenseForm.expense_date = formatDate(expenseForm.expense_date);
+            // expenseForm.amount = Number(
+            //     expenseForm.amount?.replace(/,/g, "") || 0
+            // );
         }
 
 
@@ -470,10 +481,15 @@ export default function Settlement() {
             ...expenseForm,
         };
 
+        // newRow.amount = Number(
+        //         expenseForm.amount?.replace(/,/g, "") || 0
+        // );
 
-        formData.actual_expense_total = Number(totalexpense) + Number(newRow.amount);
+        formData.actual_expense_total = Number(totalexpense) + Number(newRow.amount.replace(/,/g, ""));
         formData.balance_excess = Number(formData.approved_budget) - (formData.actual_expense_total);
-        setTotaleExpense(Number(totalexpense) + Number(newRow.amount));
+        setTotaleExpense(Number(totalexpense) + Number(newRow.amount.replace(/,/g, "")));
+        
+        
 
         setExpenseRows((prev) => [...prev, newRow]);
 
@@ -541,10 +557,6 @@ export default function Settlement() {
     // to load the attached file
     const [filelist, setFileList] = useState([]);
 
-
-    // const [attachmentError, setAttachmentError] = useState(false);
-    // const [attachments, setAttachments] = useState([]);
-
     const {
         loading: settlementSubmitting,
         error: settlementSubmitError,
@@ -569,6 +581,13 @@ export default function Settlement() {
             fileName: file.name,
             fileSize: file.size,
             fileType: file.type,
+        }));
+
+        const updatedExpenseRows = expenseRows.map((row) => ({
+            ...row,
+            amount: Number(
+                String(row.amount || "0").replace(/,/g, "")
+            ),
         }));
 
         const settlementJson = {
@@ -631,7 +650,7 @@ export default function Settlement() {
                     ? formData.acc_type_id
                     : null,
             attachments: attachmentList,
-            expenses: expenseRows
+            expenses: updatedExpenseRows
         }
 
         try {
@@ -713,11 +732,8 @@ export default function Settlement() {
         // setshowFileList(false);
         setFileList([]);
         setAttachments([]);
-        // setApproverSection(false);
-
-        // Clear any validation errors if applicable
+        
         setAttachmentError(false);
-        // setErrors({});
 
         setExpenseRows([]);
     };
@@ -738,10 +754,7 @@ export default function Settlement() {
         }
 
         try {
-            // const response = await axios.get(
-            //     `${import.meta.env.VITE_API_URL}/event-budget-proposal/${proposalNo}`
-            // );
-
+            
             const response = await getProposaReqNo(proposalNo);
 
             console.log("Proposal data:", response.data);
@@ -1578,7 +1591,7 @@ export default function Settlement() {
                         <Grid container spacing={3}>
                             <FormControl required sx={formControl3rows} >
                                 <TextField
-                                    type="number"
+                                    type="text"
                                     id="txtAmount"
                                     label="Amount"
                                     placeholder="Amount"
@@ -1590,7 +1603,16 @@ export default function Settlement() {
                                     value={expenseForm.amount}
                                     onChange={handleExpFieldChange("amount")}
                                     onKeyDown={(e) => {
-                                        if (["e", "E", "+", "-", "ArrowUp", "ArrowDown"].includes(e.key)) {
+                                        if (
+                                            [
+                                                "e",
+                                                "E",
+                                                "+",
+                                                "-",
+                                                "ArrowUp",
+                                                "ArrowDown",
+                                            ].includes(e.key)
+                                        ) {
                                             e.preventDefault();
                                         }
                                     }}
@@ -1808,7 +1830,7 @@ export default function Settlement() {
                         </FormControl>
                         <FormControl required sx={formControl4rows} >
                             <TextField
-                                type="number"
+                                type="text"
                                 id="txtActualExpense"
                                 label="Actual Expense (c)"
                                 placeholder="Actual Expense (C)"

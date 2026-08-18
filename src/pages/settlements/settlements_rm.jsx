@@ -60,9 +60,10 @@ import useSettlementPOST from "../../hooks/settlements/useSettlementPOST.js"
 
 import useSettlementPATCH from "../../hooks/settlements/useSettlementPATCH.js";
 // import useSettlement from "../../hooks/settlements/useSettlement.js"
-import { getSettlement } from "../../services/settlements/getSettlementById_Service.js"
+import { getSettlement } from "../../services/settlements/getSettlementById_Service.js";
 import { getProposaReqNo } from "../../services/proposals_req_no_Service.js";
-import { getCheckSettlement } from "../../services/settlements/checksettlementService.js"
+import { getCheckSettlement } from "../../services/settlements/checksettlementService.js";
+import { formatIndianAmount } from "../../utils/amountFormatter.js";
 
 
 export default function Settlement() {
@@ -151,15 +152,7 @@ export default function Settlement() {
         loading,
         loadData,
     } = useGetSettlementForApprover(empId);
-
-    // Calling Settlement by id
-    // const [settlementid, setSettlementid] = useState("");
-    // const {
-    //     SettlementRows,
-    //     Settlementloading,
-    // } = useSettlement(settlementid);
     
-
     // get the Settlements Type list from DB using Hook
     const { settlementtype } = useSettlementType();
 
@@ -190,6 +183,11 @@ export default function Settlement() {
         response.settlement.map((row) => {
             if (row.id === Selrow.id) {
                 setReqId(Selrow.id);
+                const rm_approved_amt_formated = formatIndianAmount(row.approved_amount === null ||
+                                        row.approved_amount === undefined ||
+                                        row.approved_amount === ""
+                                            ? ""
+                                            : row.approved_amount);
                 setFormData((prev) => ({
                     ...prev,
                     settlement_no: row.settlement_no,
@@ -237,7 +235,7 @@ export default function Settlement() {
                     acc_type_id: row.acc_type_id,
                     approved_by: row.approved_by,
                     approved_date: row.approved_date,
-                    approved_amount: row.approved_amount,
+                    approved_amount: rm_approved_amt_formated,
                     approved_remarks: row.approved_remarks,
                     fin_approved_by: row.fin_approved_by,
                     fin_approved_date: row.fin_approved_date,
@@ -560,12 +558,6 @@ export default function Settlement() {
         settlementPATCH,
       } = useSettlementPATCH();
 
-    // const {
-    //     loading: settlementSubmitting,
-    //     error: settlementSubmitError,
-    //     submitSettlement,
-    // } = useSettlementPOST();
-
     // event handler for form submit
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -593,25 +585,12 @@ export default function Settlement() {
             status_id: s_id,
             approved_by: JSON.parse(localStorage.getItem("user"))?.empId,
             // Note replace 1273 with user login emp id
-            approved_amount: formData.approved_amount,
+            // approved_amount: formData.approved_amount,
+            approved_amount: Number(
+                formData.approved_amount?.replace(/,/g, "") || 0
+            ),
             approved_remarks: formData.approved_remarks
         }
-
-        // if (attachments.length === 0 && formData.proposal === 2) {
-        //     setAttachmentError(true);
-        //     alert("Please upload Bills (Attachments).");
-        //     return;
-        // }else{
-        //     setAttachmentError(false);
-        // }
-
-        // const attachmentList = attachments.map((file, index) => ({
-        //     sequence: index + 1,
-        //     fileName: file.name,
-        //     fileSize: file.size,
-        //     fileType: file.type,
-        // }));
-
 
         try{
             const response = await settlementPATCH(settlementJson);
@@ -619,13 +598,6 @@ export default function Settlement() {
             console.log("API Response:", response);
             setSettlementResponse(response);
             setSubmitSuccess(true);
-            // alert(msg);
-            // setFormData((prev) => ({
-            //     ...prev,
-            //     settlement_no:
-            //     response[0]?.settlement_no ||
-            //     prev.settlement_no,
-            // }));
 
             await loadData(); // Refresh the settlements list after successful submission
             
@@ -791,6 +763,17 @@ export default function Settlement() {
 
     // Approve Reject Acction
       const [action, setAction] = useState("");
+
+    //   Handle Amount Change with Indian Number Formatting
+    const handleAmountChange = (field) => (e) => {
+        const formattedValue = formatIndianAmount(e.target.value);
+
+        setFormData((prev) => ({
+            ...prev,
+            [field]: formattedValue,
+        }));        
+    };
+
 
     return(
         <SectionCard title="">
@@ -1818,12 +1801,21 @@ export default function Settlement() {
                             <TextField
                                 label="Approved Amount"
                                 placeholder="Approver Amount"
-                                type="number"
+                                type="text"
                                 value={formData.approved_amount}
                                 required
-                                onChange={handleFieldChange("approved_amount")}
+                                onChange={handleAmountChange("approved_amount")}
                                 onKeyDown={(e) => {
-                                    if (["e", "E", "+", "-", "ArrowUp", "ArrowDown"].includes(e.key)) {
+                                    if (
+                                        [
+                                            "e",
+                                            "E",
+                                            "+",
+                                            "-",
+                                            "ArrowUp",
+                                            "ArrowDown",
+                                        ].includes(e.key)
+                                    ) {
                                         e.preventDefault();
                                     }
                                 }}

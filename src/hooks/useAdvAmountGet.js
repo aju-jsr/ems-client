@@ -6,7 +6,7 @@ const useAdvamountGet = (event_proposal_id) => {
   const [loadingAdvAmt, setLoading] = useState(true);
   const [errorAdvAmt, setError] = useState("");
 
-  const loadData = async () => {
+  const AdvAmt_loadData = async () => {
     try {
       setLoading(true);
       const response = await getAdvAmount(event_proposal_id);
@@ -21,14 +21,14 @@ const useAdvamountGet = (event_proposal_id) => {
   };
 
   useEffect(() => {
-      loadData();
+      AdvAmt_loadData();
   }, [event_proposal_id]);
 
   return {
     rowsAdvAmt,
     loadingAdvAmt,
     errorAdvAmt,
-    refresh: loadData,
+    AdvAmt_loadData,
   };
 };
 

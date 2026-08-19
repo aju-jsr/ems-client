@@ -6,7 +6,7 @@ const useGetSettlementAmount = (reqId) => {
   const [loadingSettlementAmt, setLoading] = useState(true);
   const [errorSettlementAmt, setError] = useState("");
 
-  const loadData = async () => {
+  const SettlementAmt_loadData = async () => {
     try {
       setLoading(true);
       const response = await getSettlementAmount(reqId);
@@ -22,14 +22,14 @@ const useGetSettlementAmount = (reqId) => {
   };
 
   useEffect(() => {
-      loadData();
+      SettlementAmt_loadData();
   }, [reqId]);
 
   return {
     rowsSettlementAmt,
     loadingSettlementAmt,
     errorSettlementAmt,
-    refresh: loadData,
+    SettlementAmt_loadData,
   };
 };
 

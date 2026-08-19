@@ -61,6 +61,8 @@ import { getSettlement } from "../../services/settlements/getSettlementById_Serv
 import { getProposaReqNo } from "../../services/proposals_req_no_Service.js";
 import { getCheckSettlement } from "../../services/settlements/checksettlementService.js"
 import { formatIndianAmount } from "../../utils/amountFormatter.js";
+import useGetSettlementAmount from "../../hooks/settlements/useGetSettlementAmount.js";
+
 
 export default function Settlement() {
     // Set Form Title
@@ -72,11 +74,15 @@ export default function Settlement() {
     // Loged in user details
     const empId = JSON.parse(localStorage.getItem("user"))?.empId;
 
+    const [reqId, setReqId] = useState(0);
+
     const currentDate = new Date();
 
     const TodayformattedDate = `${currentDate.getFullYear()}-${String(
         currentDate.getMonth() + 1
     ).padStart(2, "0")}-${String(currentDate.getDate()).padStart(2, "0")}`;
+
+    const [approverSection, setApproverSection] = useState(false);
 
     const getFinancialYear = () => {
         const today = new Date();
@@ -168,6 +174,7 @@ export default function Settlement() {
 
     const onRowSelected = async (Selrow) => {
         // setSettlementid(Selrow.id);
+        handleClear();  
         setDisableSubmit(true);
         const response = await getSettlement(Selrow.id);
 
@@ -184,7 +191,15 @@ export default function Settlement() {
 
         response.settlement.map((row) => {
             if (row.id === Selrow.id) {
+                setReqId(Selrow.id);
+                if(row.status_id === 3 || row.status_id === 4 || row.status_id === 6 || row.status_id === 7){
+                    setApproverSection(true);
+                }else{
+                    setApproverSection(false);
+                }
                 const approved_amount_formattedValue = formatIndianAmount(row.approved_amount);
+                const fin_approved_amount_formattedValue = formatIndianAmount(row.fin_approved_amount);
+                
                 setFormData((prev) => ({
                     ...prev,
                     settlement_no: row.settlement_no,
@@ -236,7 +251,7 @@ export default function Settlement() {
                     approved_remarks: row.approved_remarks,
                     fin_approved_by: row.fin_approved_by,
                     fin_approved_date: row.fin_approved_date,
-                    fin_approved_amount: row.fin_approved_amount,
+                    fin_approved_amount: fin_approved_amount_formattedValue,
                     fin_remarks: row.fin_remarks
                 }));
             }
@@ -728,8 +743,7 @@ export default function Settlement() {
     const handleClear = () => {
         setDisableSubmit(false);
         setFormData(initialFormData);
-        // setShowFileUpload(true);
-        // setshowFileList(false);
+        setApproverSection(false);
         setFileList([]);
         setAttachments([]);
         
@@ -828,6 +842,68 @@ export default function Settlement() {
             return false;
         }
     };
+
+    const handleAmountChange = (field) => (e) => {
+            const formattedValue = formatIndianAmount(e.target.value);
+    
+            setFormData((prev) => ({
+                ...prev,
+                [field]: formattedValue,
+            }));        
+        };
+
+    // Columns Settlement Amount
+    const columnsSettlementAmt = [
+        {
+            field: "settlement_no",
+            headerName: "Settlement No.",
+            width: 140,
+        },
+        {
+            field: "sub_settlement_no",
+            headerName: "Sub No.",
+            width: 140,
+        },
+        {
+            field: "amount",
+            headerName: "Amount",
+            width: 150,
+            // type: "number",
+            valueFormatter: (value) =>
+                value?.toLocaleString("en-IN"),
+        },
+        
+        {
+            field: "paid_on",
+            headerName: "Paid Date",
+            width: 150,
+            valueFormatter: (value) =>
+                value
+                ? new Date(value).toLocaleDateString("en-GB")
+                : "",
+        },
+        {
+            field: "mode",
+            headerName: "Payment Mode",
+            width: 150,
+        },
+        {
+            field: "remarks",
+            headerName: "Payment Remarks",
+            width: 152,
+        },
+        
+    ];
+
+    const {
+        rowsSettlementAmt,
+        loadingSettlementAmt,
+    } = useGetSettlementAmount(reqId);
+
+    const totalAmount = rowsSettlementAmt.reduce(
+        (sum, row) => sum + Number(row.amount || 0),
+        0
+    );
 
     return (
         <SectionCard title="">
@@ -1885,8 +1961,8 @@ export default function Settlement() {
                         </FormControl>
                         <FormControl required sx={formControl2rows} >
                             <TextField
-                                label="Remarks"
-                                placeholder="Remarks"
+                                label="Details/Explanation of Expenses Submitted"
+                                placeholder="Details/Explanation of Expenses Submitted"
                                 id="txtRemarks"
                                 value={formData.remarks}
                                 onChange={handleFieldChange("remarks")}
@@ -2034,6 +2110,218 @@ export default function Settlement() {
                     </FormControl>
 
                 </Grid>
+
+                {/* Approver Section */}
+                {approverSection && (
+                    <fieldset>
+                        <legend>Approver Section</legend>
+                        <Grid container spacing={3}>
+                            {/* Approver Remarks */}
+                            <FormControl sx={formControl2rows}>
+                                <TextField
+                                    label="Approver Remarks"
+                                    placeholder="Approver Remarks"
+                                    value={formData.approved_remarks}
+                                    multiline
+                                    rows={2}
+                                    required
+                                    onChange={handleFieldChange("approved_remarks")}
+                                    slotProps={{
+                                    input: { readOnly: true },
+                                }}
+
+                                />
+                            </FormControl>
+                            <FormControl sx={formControl2rows}>
+                                <TextField
+                                    label="Approved Amount"
+                                    placeholder="Approver Amount"
+                                    type="text"
+                                    value={formData.approved_amount}
+                                    required
+                                    onChange={handleFieldChange("approved_amount")}
+                                    slotProps={{
+                                    input: { readOnly: true },
+                                }}
+                                    onKeyDown={(e) => {
+                                        if (["e", "E", "+", "-", "ArrowUp", "ArrowDown"].includes(e.key)) {
+                                            e.preventDefault();
+                                        }
+                                    }}
+
+                                    onWheel={(e) => e.target.blur()}
+                                    sx={{
+                                        "& input[type=number]": {
+                                            MozAppearance: "textfield",
+                                        },
+                                        "& input[type=number]::-webkit-outer-spin-button, & input[type=number]::-webkit-inner-spin-button":
+                                        {
+                                            WebkitAppearance: "none",
+                                            margin: 0,
+                                        },
+                                    }}
+                                />
+                            </FormControl>
+
+                        </Grid>
+                    </fieldset>
+                )}
+                {/* Finance Section */}
+                {approverSection && (
+                    <fieldset>
+                        <legend>Finance Section</legend>
+                        <Grid container spacing={3}>
+                            {/* fin Approver Remarks */}
+                            <FormControl sx={formControl2rows}>
+                                <TextField
+                                    label="Finance Remarks"
+                                    placeholder="Finance Remarks"
+                                    value={formData.fin_remarks}
+                                    multiline
+                                    rows={2}
+                                    // required
+                                    onChange={handleFieldChange("fin_remarks")}
+                                    // error={
+                                    //     !formData.fin_remarks
+                                    // }
+                                    sx={{
+                                        "& .MuiInputLabel-root": {
+                                            color: "blue",
+                                        },
+                                        "& .MuiInputLabel-root.Mui-focused": {
+                                            color: "blue",
+                                        },
+                                    }}
+                                />
+                            </FormControl>
+                            {/* Fin Approved Amount     */}
+                            <FormControl sx={formControl2rows}>
+
+                                <TextField
+                                    label="Finance Approved Amount"
+                                    placeholder="Finance Approved Amount"
+                                    type="text"
+                                    value={formData.fin_approved_amount || ""}
+                                    // required
+                                    onChange={handleAmountChange("fin_approved_amount")}
+
+                                    onKeyDown={(e) => {
+                                        if (
+                                            [
+                                                "e",
+                                                "E",
+                                                "+",
+                                                "-",
+                                                "ArrowUp",
+                                                "ArrowDown",
+                                            ].includes(e.key)
+                                        ) {
+                                            e.preventDefault();
+                                        }
+                                    }}
+
+                                    onWheel={(e) => e.target.blur()}
+
+                                    // error={!formData.fin_approved_amount}
+
+                                    sx={{
+                                        "& .MuiInputLabel-root": {
+                                            color: "blue",
+                                        },
+                                        "& .MuiInputLabel-root.Mui-focused": {
+                                            color: "blue",
+                                        },
+                                    }}
+                                />
+
+                            </FormControl>
+
+                            {formData.status_name === 'Approved by Finance' && (
+                                <fieldset>
+                                    <legend>Settlement Amount Paid</legend>
+                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                        {/* Advance Payment List */}
+                                        <fieldset>
+                                            <legend>Settlement Payment List</legend>
+                                            <Box sx={{ height: 300, width: 900 }}>
+                                                <DataGrid
+                                                    rows={rowsSettlementAmt}
+                                                    columns={columnsSettlementAmt}
+                                                    loading={loadingSettlementAmt}
+                                                    pageSizeOptions={[5, 10, 20, 50]}
+                                                    initialState={{
+                                                        pagination: {
+                                                            paginationModel: {
+                                                                pageSize: 5,
+                                                            },
+                                                        },
+                                                    }}
+                                                    disableRowSelectionOnClick
+                                                    getRowHeight={() => "auto"}
+
+                                                    sx={{
+                                                        // Header
+                                                        "& .MuiDataGrid-columnHeaders": {
+                                                            backgroundColor: "#FFD54F", // Yellow
+                                                            color: "#000",
+                                                            fontWeight: "bold",
+                                                            fontSize: "0.80rem",
+                                                        },
+
+                                                        "& .MuiDataGrid-columnHeader": {
+                                                            backgroundColor: "#FFD54F",
+                                                        },
+
+                                                        "& .MuiDataGrid-columnHeaderTitle": {
+                                                            fontWeight: "bold",
+                                                            fontSize: "0.80rem",
+                                                        },
+
+                                                        // Rows
+                                                        "& .MuiDataGrid-row": {
+                                                            fontSize: "0.80rem",
+                                                        },
+
+                                                        // Cells
+                                                        "& .MuiDataGrid-cell": {
+                                                            whiteSpace: "normal !important",
+                                                            wordBreak: "break-word",
+                                                            lineHeight: "1.5 !important",
+                                                            display: "flex",
+                                                            alignItems: "center",
+                                                            py: 1,
+                                                            fontSize: "0.80rem",
+                                                        },
+
+                                                        // Footer
+                                                        "& .MuiDataGrid-footerContainer": {
+                                                            fontSize: "0.80rem",
+                                                        },
+                                                    }}
+
+                                                />
+                                                <Typography sx={{
+                                                    textAlign: "left",
+                                                    color: "#000",
+                                                    fontWeight: "bold"
+                                                }}>
+                                                    Total Advance : ₹ {totalAmount.toLocaleString()}
+                                                </Typography>
+                                            </Box>
+                                        </fieldset>
+
+
+
+
+                                    </LocalizationProvider>
+                                </fieldset>
+                            )}
+
+
+
+                        </Grid>
+                    </fieldset>
+                )}
                 {submitSuccess && (
                     <Alert severity="success" sx={{ mt: 2 }}>
                         <strong>Settlement proposal submitted successfully</strong>

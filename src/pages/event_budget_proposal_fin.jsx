@@ -288,6 +288,7 @@ export default function EventInformation() {
         setisAdvamount(false);
       }
 
+      await AdvAmt_loadData();
       await loadData(); // Refresh the settlements list after successful submission
           
     } catch (error) {
@@ -312,6 +313,7 @@ export default function EventInformation() {
   const {
     rowsAdvAmt,
     loadingAdvAmt,
+    AdvAmt_loadData,
   } = useAdvAmountGet(reqId); 
   
   const totalAmount = rowsAdvAmt.reduce(
@@ -1647,8 +1649,8 @@ const initialFormData = {
 
                 <FormControl sx={formControl2rows}>
                   <TextField
-                    label="Transaction ID"
-                    placeholder="Transaction ID"
+                    label="Remarks/Transaction ID"
+                    placeholder="Remarks/Transaction ID"
                     value={formData.transactionid}
                     required
                     onChange={handleFieldChange("transactionid")}

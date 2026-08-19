@@ -579,6 +579,7 @@ export default function Settlement() {
     const {
         rowsSettlementAmt,
         loadingSettlementAmt,
+        SettlementAmt_loadData,
     } = useGetSettlementAmount(reqId); 
       
     const totalAmount = rowsSettlementAmt.reduce(
@@ -604,6 +605,9 @@ export default function Settlement() {
         console.log("submitSuccess:", submitSuccess);
     }, [submitSuccess]);
 
+    // useEffect(() => {
+    //     SettlementAmt_loadData();
+    // }, [reqId]);
     // event handler for form submit
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -659,7 +663,7 @@ export default function Settlement() {
                 setSubmitSuccess(response);
                 setSettlementAmount(true);
             }
-
+            await SettlementAmt_loadData(); // Refresh the settlement amount list after successful submission
             await loadData(); // Refresh the settlements list after successful submission
             
         } catch (error) {
@@ -1952,39 +1956,6 @@ export default function Settlement() {
                             />
                         </FormControl>
                         <FormControl sx={formControl2rows}>
-                            {/* <TextField
-                                label="Finance Approved Amount"
-                                placeholder="Finance Approved Amount"
-                                type="number"
-                                value={formData.fin_approved_amount}
-                                required
-                                onChange={handleFieldChange("fin_approved_amount")}
-                                onKeyDown={(e) => {
-                                    if (["e", "E", "+", "-", "ArrowUp", "ArrowDown"].includes(e.key)) {
-                                        e.preventDefault();
-                                    }
-                                }}
-                                onWheel={(e) => e.target.blur()}
-                                error={
-                                    !formData.fin_approved_amount
-                                }
-                                sx={{
-                                    "& .MuiInputLabel-root": {
-                                        color: formData.fin_approved_amount ? "blue" : "red",
-                                    },
-                                    "& .MuiInputLabel-root.Mui-focused": {
-                                        color: formData.fin_approved_amount ? "blue" : "red",
-                                    },
-                                    "& input[type=number]": {
-                                        MozAppearance: "textfield",
-                                    },
-                                    "& input[type=number]::-webkit-outer-spin-button, & input[type=number]::-webkit-inner-spin-button":
-                                    {
-                                        WebkitAppearance: "none",
-                                        margin: 0,
-                                    },
-                                }}
-                            /> */}
 
                             <TextField
                                 label="Finance Approved Amount"
@@ -2215,7 +2186,13 @@ export default function Settlement() {
                                         </Alert>
                                     )} */}
                                 </Grid>
-                                {/* <Grid container spacing={3}> */}
+                                
+                                {settlementamount && (
+                                    <Alert severity="success" sx={{ mt: 2 }}>
+                                        <strong>Settlement Amount saved successfully.</strong>
+
+                                    </Alert>
+                                )}
                                 <Box
                                     sx={{
                                         display: "flex",

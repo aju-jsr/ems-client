@@ -224,6 +224,7 @@ setHeaderTitle("Budget Proposal");
     if (attachments.length === 0 && formData.proposal === 2) {
       setAttachmentError(true);
         alert("Please upload Bills (Attachments).");
+        setDisableSubmit(false);
         return;
     }else{
       setAttachmentError(false);
@@ -231,13 +232,18 @@ setHeaderTitle("Budget Proposal");
 
     // 5 Aug for date
     const today = dayjs().startOf("day");
-    if (formData.eventStartDate.isBefore(today, "day")) {
+
+    if (formData.eventStartDate.isBefore(today, "day") && 
+          formData.proposal === 1) {
         alert("The Event Start Date cannot be earlier than today's date.");
+        setDisableSubmit(false);
         return;
     }
 
-    if (formData.eventEndDate.isBefore(today, "day")) {
+    if (formData.eventEndDate.isBefore(today, "day") && 
+          formData.proposal === 1) {
         alert("The Event End Date cannot be earlier than today's date.");
+        setDisableSubmit(false);
         return;
     }
 

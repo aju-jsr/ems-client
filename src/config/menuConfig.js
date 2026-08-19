@@ -9,12 +9,6 @@ import AppRegistrationIcon from "@mui/icons-material/AppRegistration";
 
 export const menuConfig = [
 
-    // {
-    //     label: "Dashboard",
-    //     icon: DashboardIcon,
-    //     path: "/dashboard"
-    // },
-
     {
         label: "Budget Proposal",
 
@@ -68,9 +62,13 @@ export const menuConfig = [
                 path: "/settlements_fin"
             }
         ]
-        // icon: AccountBalanceWalletIcon,
-        // permission: "SETTLEMENT",
-        // path: "/settlement"
+    },
+
+    {
+        label: "Closure Form",
+        icon: ReceiptIcon,
+        permission: "EVENT_CREATE",
+        path: "/closure_form"
     },
 
     {

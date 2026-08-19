@@ -22,6 +22,8 @@ import { HeaderProvider } from "./components/HeaderContext.jsx"
 // Reports
 import BudgetReport from "./pages/repors/budget_proposal_report.jsx";
 import SettlementReport from "./pages/repors/budget_settlement_report.jsx";
+// Closer Form
+import ClosureForm from "./pages/closure_form.jsx";
 
 export default function App() {
   if (window.location.pathname.includes("//")) {
@@ -102,8 +104,11 @@ export default function App() {
               path='/settlements_fin'
               element={<SettlementsForFIN />}
             />
-            
-            
+
+             <Route
+              path='/closure_form'
+              element={<ClosureForm />}
+            />
 
           </Route>
 

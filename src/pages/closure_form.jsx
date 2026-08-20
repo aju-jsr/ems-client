@@ -76,12 +76,7 @@ export default function ClosureForm() {
     // Set form data
     const [formData, setFormData] = useState({
         proposal_no: "EBP-",
-        sub_settlement_no: "",
         // request_date: TodayformattedDate,
-        request_date: null,
-        settlement_type: "",
-        status: "Draft",
-        event_proposal_no: "",
         unit: "",
         event_name: "",
         event_start_date: null,
@@ -94,37 +89,30 @@ export default function ClosureForm() {
         req_emp_id: JSON.parse(localStorage.getItem("user"))?.empId,
         req_emp_name: JSON.parse(localStorage.getItem("user"))?.name,
         manager_id: "",
-        approved_budget: "",
-        adv_amount: "",
-        actual_expense_total: "",
-        balance_excess: "",
-        remarks: "",
-        acc_holder_name: "",
-        acc_number: "",
-        ifsc_code: "",
-        bank_name: "",
-        branch: "",
-        acc_type_id: "",
+        // approved_budget: "",
+        // adv_amount: "",
+        
+        // balance_excess: "",
+        
+        // acc_holder_name: "",
+        // acc_number: "",
+        // ifsc_code: "",
+        // bank_name: "",
+        // branch: "",
+        // acc_type_id: "",
         created_at: null,
-        approved_by: "",
-        approved_date: null,
-        approved_amount: "",
-        approved_remarks: "",
-        fin_approved_by: "",
-        fin_approved_date: "",
-        fin_approved_amount: "",
-        fin_remarks: "",
-        // status_name: "Draft",
-        status_name: null,
+        
         department_name: "",
         event_duration: "",
         event_authorised_person: "",
         total_collection: "",
         income_collection_details: "",
         report_prepared_by: "",
-        total_expenses: "",
+        actual_expense_total: "",
+        // total_expenses: "",
         report_checked_and_verified_by: "",
-        amount_receivable_payable_by_university: ""
+        amount_receivable_payable_by_university: "",
+        remarks: "",
     });
 
     const [expenseRows, setExpenseRows] = useState([]);
@@ -132,7 +120,6 @@ export default function ClosureForm() {
     const [expenseForm, setExpenseForm] = useState({
         expenses_head: "",
         vendor_name: "",
-        // request_date: TodayformattedDate,
         narration: "",
         payment_mode: "",
         qty: "",
@@ -505,6 +492,9 @@ export default function ClosureForm() {
                 width: 120,
                 editable: true,
                 type: "text",
+                valueGetter: (value) => {
+                    return Number(value) === 1 ? "Cash" : "Online";
+                },
             },
             {
                 field: "qty",
@@ -1191,6 +1181,13 @@ export default function ClosureForm() {
 
 
                             />
+                            <Typography sx={{
+                            textAlign: "left",
+                            color: "#000",
+                            fontWeight: "bold"
+                            }}>
+                                Total Expenses : ₹ {formData.actual_expense_total.toLocaleString()}
+                            </Typography>
                         </Box>
                         <Grid container spacing={3}>
                             
@@ -1298,9 +1295,7 @@ export default function ClosureForm() {
                                     value={expenseForm.payment_mode}
                                     label="Choose Payment Mode"
                                     onChange={handleExpFieldChange("payment_mode")}
-                                    // onChange={(e) => {
-                                    //     handleFieldChange("sub_settlement_no")(e);
-                                    // }}
+                                    
                                     sx={{
                                         height: 50,
                                         '& .MuiSelect-select': {
@@ -1590,17 +1585,17 @@ export default function ClosureForm() {
                                 type="number"
                                 label="Total Expenses"
                                 value={
-                                    formData.total_expenses
+                                    formData.actual_expense_total
                                 }
                                 onChange={
                                     handleFieldChange(
-                                        "total_expenses"
+                                        "actual_expense_total"
                                     )
                                 }
                                 onWheel={(e) => e.target.blur()}
                                 required
                                 error={
-                                    !formData.total_expenses
+                                    !formData.actual_expense_total
                                 }
                                 onKeyDown={(e) => {
 
@@ -1618,6 +1613,12 @@ export default function ClosureForm() {
                                     }
                                 }}
                                 sx={{
+                                    "& .MuiInputLabel-root": {
+                                        color: formData.actual_expense_total ? "blue" : "red",
+                                    },
+                                    "& .MuiInputLabel-root.Mui-focused": {
+                                        color: formData.actual_expense_total ? "blue" : "red",
+                                    },
                                     "& input[type=number]": {
                                         MozAppearance: "textfield",
                                     },
@@ -1701,6 +1702,37 @@ export default function ClosureForm() {
                                         margin: 0,
                                     },
                                 }}
+                            />
+                        </FormControl>
+                    </Grid>
+
+                    <Grid container spacing={3}>
+                        {/* Remarks */}
+                        <FormControl required sx={formControl3rows} >
+                            <TextField
+                                label="Remarks"
+                                placeholder="Remarks"
+                                id="txtRemarks"
+                                type="text"
+                                value={formData.remarks}
+                                onChange={handleFieldChange("remarks")}
+                                multiline
+                                rows={4}
+                                required
+                                error={
+                                    !formData.remarks
+                                }
+                                sx={{
+                                    "& .MuiInputLabel-root": {
+                                        color: formData.remarks ? "blue" : "red",
+                                    },
+                                    "& .MuiInputLabel-root.Mui-focused": {
+                                        color: formData.remarks ? "blue" : "red",
+                                    },
+                                }}
+                            // slotProps={{
+                            //     input: { readOnly: true },
+                            // }}
                             />
                         </FormControl>
                     </Grid>

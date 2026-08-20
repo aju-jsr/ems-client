@@ -52,6 +52,8 @@ import useAdvAmountGet from "../hooks/useAdvAmountGet";
 // get payment mode details from service API
 import usePaymentMode from "../hooks/usePaymentMode";
 
+import useCloserFormPOST from "../hooks/closer_form/useCloserFormPOST.js";
+
 export default function ClosureForm() {
     const { setHeaderTitle } = useHeader();
     setHeaderTitle("Closure Form")
@@ -67,16 +69,27 @@ export default function ClosureForm() {
         0
     );
 
+    const {
+        loading: closerSubmitting,
+        error: closerSubmitError,
+        submitCloserForm,
+      } = useCloserFormPOST();
+
     // Disable Submit button handler
     const [disableSubmit, setDisableSubmit] = useState(false);
+    const [submitsuccess, setSubmitSuccess] = useState(false);
+    const [zerosuccess, setZeroSuccess] = useState(false);
+    // const [proposal_id, setProposal_id] = useState(0);
 
     // Load Payment Mode hook details from API
     const { paymentmode } = usePaymentMode();
 
+    const formatDate = (value) => value ? dayjs(value).format("YYYY-MM-DD") : "";
+
     // Set form data
     const [formData, setFormData] = useState({
         proposal_no: "EBP-",
-        // request_date: TodayformattedDate,
+        
         unit: "",
         event_name: "",
         event_start_date: null,
@@ -89,17 +102,7 @@ export default function ClosureForm() {
         req_emp_id: JSON.parse(localStorage.getItem("user"))?.empId,
         req_emp_name: JSON.parse(localStorage.getItem("user"))?.name,
         manager_id: "",
-        // approved_budget: "",
-        // adv_amount: "",
         
-        // balance_excess: "",
-        
-        // acc_holder_name: "",
-        // acc_number: "",
-        // ifsc_code: "",
-        // bank_name: "",
-        // branch: "",
-        // acc_type_id: "",
         created_at: null,
         
         department_name: "",
@@ -109,7 +112,7 @@ export default function ClosureForm() {
         income_collection_details: "",
         report_prepared_by: "",
         actual_expense_total: "",
-        // total_expenses: "",
+        
         report_checked_and_verified_by: "",
         amount_receivable_payable_by_university: "",
         remarks: "",
@@ -268,7 +271,6 @@ export default function ClosureForm() {
             0
         );
     };
-
 
     // event Handler value change of controls
     const handleFieldChange = (field) => (event) => {
@@ -577,10 +579,6 @@ export default function ClosureForm() {
             return updatedRows;
         });
 
-
-        // setExpenseRows((prevRows) =>
-        //     prevRows.filter((row) => row.id !== id)
-        // );
     };
 
     // Advance Amount Grid Columns
@@ -623,8 +621,90 @@ export default function ClosureForm() {
 
     // event Handler for form submit
     const handleSubmit = async (event) => {
+        event.preventDefault();
+        setSubmitSuccess(false);
+        setDisableSubmit(true);
+        if(expenseRows.length  === 0){
+            alert("Please Add Expenses.");
+            setDisableSubmit(false);
+            return;
+        }
 
+        const closerJson = {
+
+                proposal_id: reqId,
+                proposa_no: formData.proposal_no,
+                event_name: formData.event_name,
+                unit_id: formData.unit,
+                event_start_date: formatDate(formData.event_start_date),
+                event_end_date: formatDate(formData.event_end_date),
+                event_duration: getDurationInDays(),
+                school_id: formData.school_id,
+                department_id: formData.department_id,
+                name_of_head: formData.name_of_head,
+                financial_year: formData.financial_year,
+                event_authorised_person: formData.event_authorised_person,
+                total_collection: formData.total_collection,
+                income_collection_details: formData.income_collection_details,
+                report_prepared_by: formData.report_prepared_by,
+                actual_expense_total: formData.actual_expense_total,
+                report_checked_and_verified_by: formData.report_checked_and_verified_by,
+                amount_receivable_payable_by_university: formData.amount_receivable_payable_by_university,
+                remarks: formData.remarks,
+                expense:expenseRows
+            
+        };
+
+        const response = await submitCloserForm(closerJson);
+        if(response[0].success === 0){
+            setZeroSuccess(true);
+            setSubmitSuccess(false);
+        }else{
+            setSubmitSuccess(true);
+        }
+        
     }
+
+    const initialFormData = {
+        proposal_no: "EBP-",
+        
+        unit: "",
+        event_name: "",
+        event_start_date: null,
+        event_end_date: null,
+        school_id: "",
+        department_id: "",
+        name_of_head: "",
+        
+        financial_year: "",
+        req_emp_id: JSON.parse(localStorage.getItem("user"))?.empId,
+        req_emp_name: JSON.parse(localStorage.getItem("user"))?.name,
+        manager_id: "",
+        
+        created_at: null,
+        
+        department_name: "",
+        event_duration: "",
+        event_authorised_person: "",
+        total_collection: "",
+        income_collection_details: "",
+        report_prepared_by: "",
+        actual_expense_total: "",
+        
+        report_checked_and_verified_by: "",
+        amount_receivable_payable_by_university: "",
+        remarks: "",
+    };
+    // Clear the the form
+    const handleClear = () => {
+        setSubmitSuccess(false);
+        setDisableSubmit(false);
+        setExpenseRows([]);
+        setFormData(initialFormData);
+        setReqId(-1);
+
+    };
+
     return (
         <SectionCard title="">
             <Box component="form" onSubmit={handleSubmit}>
@@ -1192,13 +1272,13 @@ export default function ClosureForm() {
                         <Grid container spacing={3}>
                             
                             {/* Expenses Head */}
-                            <FormControl required sx={formControl3rows} >
+                            <FormControl  sx={formControl3rows} >
                                 <TextField
                                     label="Expenses Head"
                                     placeholder="Expenses Head"
                                     id="txtExpenseHead"
                                     type="text"
-                                    required
+                                    
                                     error={
                                         !expenseForm.expenses_head
                                     }
@@ -1220,7 +1300,7 @@ export default function ClosureForm() {
                             </FormControl>
 
                             {/* Vendor Name */}
-                            <FormControl required sx={formControl3rows} >
+                            <FormControl sx={formControl3rows} >
                                 <TextField
                                     label="Vendor Name"
                                     placeholder="Vendor Name"
@@ -1228,7 +1308,7 @@ export default function ClosureForm() {
                                     type="text"
                                     value={expenseForm.vendor_name}
                                     onChange={handleExpFieldChange("vendor_name")}
-                                    required
+                                    
                                     error={
                                         !expenseForm.vendor_name
                                     }
@@ -1247,7 +1327,7 @@ export default function ClosureForm() {
                             </FormControl>
 
                             {/* Narration */}
-                            <FormControl required sx={formControl3rows} >
+                            <FormControl sx={formControl3rows} >
                                 <TextField
                                     label="Narration"
                                     placeholder="Narration"
@@ -1255,7 +1335,7 @@ export default function ClosureForm() {
                                     type="text"
                                     value={expenseForm.narration}
                                     onChange={handleExpFieldChange("narration")}
-                                    required
+                                    
                                     error={
                                         !expenseForm.narration
                                     }
@@ -1277,7 +1357,7 @@ export default function ClosureForm() {
                         {/* Payment Mode, Quantity and Rate */}
                         <Grid container spacing={3}>
                             {/* Payment Mode */}
-                            <FormControl required sx={formControl3rows} >
+                            <FormControl  sx={formControl3rows} >
                                 <InputLabel id="lblPaymentMode" sx={{
                                     color: expenseForm.payment_mode
                                         ? "blue"
@@ -1326,7 +1406,7 @@ export default function ClosureForm() {
                                 </Select>
                             </FormControl>
                             {/* Quantity */}
-                            <FormControl required sx={formControl3rows} >
+                            <FormControl sx={formControl3rows} >
                                 <TextField
                                 type="number"
                                 label="Quantity"
@@ -1339,7 +1419,7 @@ export default function ClosureForm() {
                                     )
                                 }
                                 onWheel={(e) => e.target.blur()}
-                                required
+                                
                                 error={
                                     !expenseForm.qty
                                 }
@@ -1374,7 +1454,7 @@ export default function ClosureForm() {
                             
                             {/* Rate */}
                             <FormControl
-                                required
+                                
                                 sx={formControl3rows}
                             >
 
@@ -1390,7 +1470,7 @@ export default function ClosureForm() {
                                         )
                                     }
                                     onWheel={(e) => e.target.blur()}
-                                    required
+                                    
                                     error={
                                         !expenseForm.rate
                                     }
@@ -1669,7 +1749,7 @@ export default function ClosureForm() {
                                 }
                                 onChange={
                                     handleFieldChange(
-                                        "formData.amount_receivable_payable_by_university"
+                                        "amount_receivable_payable_by_university"
                                     )
                                 }
                                 onWheel={(e) => e.target.blur()}
@@ -1739,6 +1819,23 @@ export default function ClosureForm() {
 
                 </fieldset>
 
+                {submitsuccess && (
+                    <Alert severity="success" sx={{ mt: 2 }}>
+                        <strong>Closer form submitted successfully.</strong>
+                    </Alert>
+                )}
+                {closerSubmitError && (
+                    <Alert severity="error" sx={{ mt: 2 }}>
+                        <strong>Error while submitting the Closer form.</strong>
+                    </Alert>
+                )}
+
+                {zerosuccess && (
+                    <Alert severity="error" sx={{ mt: 2 }}>
+                        <strong>Proposal ID - {formData.proposal_no} is already closed.</strong>
+                    </Alert>
+                )}
+
                 {/* Submite and Clear Button */}
                 <Box
                     sx={{
@@ -1752,10 +1849,18 @@ export default function ClosureForm() {
                     <Button
                         variant="contained"
                         type="submit"
-                        // disabled={proposalSubmitting || disableSubmit}
+                        disabled={closerSubmitting || disableSubmit}
                     >
-                        {/* {proposalSubmitting ? "Submitting..." : "Submit"} */}
-                        Submit
+                        {closerSubmitting ? "Submitting..." : "Submit"}
+                        
+                    </Button>
+
+                    <Button
+                        variant="contained"
+                        type="button"
+                        onClick={handleClear}
+                    >
+                        Clear
                     </Button>
 
                     

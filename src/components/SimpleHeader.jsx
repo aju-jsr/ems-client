@@ -53,10 +53,11 @@ export default function Header(title) {
                 fontWeight: 700,
                 lineHeight: 1.2,
                 color: "#fff",
+                textAlign: "left",
               }}
             >
               {/* {title} */}
-              Event Budget Proposal Form
+              Login
             </Typography>
 
             <Typography

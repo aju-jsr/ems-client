@@ -22,8 +22,13 @@ import { useState } from "react";
 import useLogin from "../hooks/useLogin";
 
 import { useNavigate, Link } from "react-router-dom";
+// Header Component
+import { useHeader } from "../components/HeaderContext.jsx";
 
 export default function Login() {
+
+    const { setHeaderTitle } = useHeader();
+    setHeaderTitle("Login");
 
     const [loginId, setLoginId] = useState("");
     const [password, setPassword] = useState("");

@@ -1360,6 +1360,14 @@ setHeaderTitle("Budget Proposal");
                     "& .MuiInputLabel-root.Mui-focused": {
                       color: formData.totalBudgetAmount ? "blue" : "red",
                     },
+                    "& input[type=number]": {
+                    MozAppearance: "textfield",
+                    },
+                    "& input[type=number]::-webkit-outer-spin-button, & input[type=number]::-webkit-inner-spin-button":
+                      {
+                        WebkitAppearance: "none",
+                        margin: 0,
+                      },
                   }}
               value={formData.totalBudgetAmount}
               onChange={handleFieldChange("totalBudgetAmount")}
@@ -1370,16 +1378,6 @@ setHeaderTitle("Budget Proposal");
               }}
 
               onWheel={(e) => e.target.blur()}
-                sx={{
-                  "& input[type=number]": {
-                    MozAppearance: "textfield",
-                  },
-                  "& input[type=number]::-webkit-outer-spin-button, & input[type=number]::-webkit-inner-spin-button":
-                    {
-                      WebkitAppearance: "none",
-                      margin: 0,
-                    },
-                }}
               
             />
           </FormControl>

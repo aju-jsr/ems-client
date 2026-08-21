@@ -1016,9 +1016,7 @@ export default function EventInformation() {
                     slotProps={{
                         input: { readOnly: true },
                       }}
-                    slotProps={{
-                      input: { readOnly: true },
-                    }}
+                    
                   />
                 </FormControl> 
                 {/* Financial Year Text Box */}
@@ -1325,16 +1323,7 @@ export default function EventInformation() {
                   "& .MuiInputLabel-root.Mui-focused": {
                     color: formData.approvedamount ? "blue" : "red",
                   },
-                }}
-              onChange={handleAmountChange("approvedamount")}
-              onKeyDown={(e) => {
-                if (["e", "E", "+", "-", "ArrowUp", "ArrowDown"].includes(e.key)) {
-                  e.preventDefault();
-                }
-              }}
 
-              onWheel={(e) => e.target.blur()}
-                sx={{
                   "& input[type=number]": {
                     MozAppearance: "textfield",
                   },
@@ -1344,6 +1333,15 @@ export default function EventInformation() {
                       margin: 0,
                     },
                 }}
+              onChange={handleAmountChange("approvedamount")}
+              onKeyDown={(e) => {
+                if (["e", "E", "+", "-", "ArrowUp", "ArrowDown"].includes(e.key)) {
+                  e.preventDefault();
+                }
+              }}
+
+              onWheel={(e) => e.target.blur()}
+              
             />
           </FormControl>
 

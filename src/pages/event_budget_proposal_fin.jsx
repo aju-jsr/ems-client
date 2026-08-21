@@ -1132,9 +1132,7 @@ const initialFormData = {
                     slotProps={{
                         input: { readOnly: true },
                       }}
-                    slotProps={{
-                      input: { readOnly: true },
-                    }}
+                    
                   />
                 </FormControl> 
                 {/* Financial Year Text Box */}

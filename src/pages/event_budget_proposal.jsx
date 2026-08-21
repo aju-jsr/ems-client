@@ -519,12 +519,24 @@ setHeaderTitle("Budget Proposal");
             e.preventDefault();
             e.stopPropagation();
             onRowSelected(params.row);
+
+            setTimeout(() => {
+              document.getElementById("eventInformation")?.scrollIntoView({
+                behavior: "smooth",
+                block: "start",
+              });
+            }, 100);
+
           }}
+          // Scroll to Event Information section
+        
+      
           sx={{
             fontSize: "0.80rem",
             fontWeight: "bold",
             cursor: "pointer",
           }}
+          
         >
           {params.value}
         </Link>
@@ -779,6 +791,7 @@ setHeaderTitle("Budget Proposal");
           </Box>
       </fieldset>
       {/* Event Information */}
+      <section id="eventInformation"></section>
       <fieldset >
             <legend>Event Information</legend>
 

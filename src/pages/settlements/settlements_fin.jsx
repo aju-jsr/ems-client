@@ -298,6 +298,13 @@ export default function Settlement() {
                         e.preventDefault();
                         e.stopPropagation();
                         onRowSelected(params.row);
+
+                        setTimeout(() => {
+                            document.getElementById("eventInformation")?.scrollIntoView({
+                            behavior: "smooth",
+                            block: "start",
+                            });
+                        }, 100);
                     }}
                     sx={{
                         fontSize: "0.80rem",
@@ -980,6 +987,7 @@ export default function Settlement() {
                 </fieldset>
 
                 {/* Settlements Information */}
+                <section id="eventInformation"></section>
                 <fieldset >
                     <legend>Settlement Information</legend>
                     <LocalizationProvider dateAdapter={AdapterDayjs}>

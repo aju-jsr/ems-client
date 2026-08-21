@@ -364,6 +364,14 @@ export default function EventInformation() {
               e.preventDefault();
               e.stopPropagation();
               onRowSelected(params.row);
+
+              setTimeout(() => {
+                document.getElementById("eventInformation")?.scrollIntoView({
+                  behavior: "smooth",
+                  block: "start",
+                });
+              }, 100);
+
             }}
             sx={{
               fontSize: "0.80rem",
@@ -583,6 +591,8 @@ export default function EventInformation() {
             />
           </Box>
       </fieldset>  
+      <section id="eventInformation"></section>
+
       <fieldset >
             <legend>Event Information</legend>
 

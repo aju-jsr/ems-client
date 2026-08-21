@@ -66,6 +66,9 @@ import { useHeader } from "../components/HeaderContext";
 
 import AttachmentList from "../components/AttachmentList"
 
+// Format Amount in thousand separator
+import { formatIndianAmount } from "../utils/amountFormatter.js";
+
 
 export default function EventInformation() {
   const { setHeaderTitle } = useHeader();
@@ -124,7 +127,7 @@ export default function EventInformation() {
   
   const { units } = useUnits();
   // 1 aug
-    const { employees} = useEmpolyees();
+  const { employees} = useEmpolyees();
   const {  acctypes } = useAccTypes();
   const { proposal} = useProposal();
   
@@ -186,6 +189,16 @@ export default function EventInformation() {
     }));
   };
 
+  //   Handle Amount Change with Indian Number Formatting
+  const handleAmountChange = (field) => (e) => {
+    const formattedValue = formatIndianAmount(e.target.value);
+
+    setFormData((prev) => ({
+      ...prev,
+      [field]: formattedValue,
+    }));
+  };
+
   const getFinancialYear = () => {
     const today = new Date();
     const year = today.getFullYear();
@@ -222,7 +235,7 @@ export default function EventInformation() {
         status_id: s_id,
         approved_by: empId,
         // Note replace 1273 with user login emp id
-        approved_amount: formData.approvedamount,
+        approved_amount: formData.approvedamount?.replace(/,/g, "") || 0,
         remarks: formData.approverremarks
       }
 
@@ -297,8 +310,15 @@ export default function EventInformation() {
           employeeName: row.req_emp_name,
           financialYear: row.financial_year,
           budgetDetails: row.details,
-          totalBudgetAmount: row.budget_amount,
-          advancePayment: row.adv_payment,
+          totalBudgetAmount: formatIndianAmount(row.budget_amount),
+          // advancePayment: row.adv_payment,
+
+          advancePayment: row.adv_payment === null ||
+                      row.adv_payment === undefined ||
+                      row.adv_payment === ""
+                      ? ""
+                      :formatIndianAmount(row.adv_payment),
+
           advancePaymentDueDate: row.adv_payment_due_date
               ? dayjs(row.event_start_date)
               : null,
@@ -313,7 +333,7 @@ export default function EventInformation() {
               ? ""
               : row.acc_type_id,
           approverremarks: row.remarks,
-          approvedamount:row.approved_amount
+          approvedamount:formatIndianAmount(row.approved_amount)
 
       }));
 
@@ -390,8 +410,16 @@ export default function EventInformation() {
           </div>
         ),
         type: "number",
-        valueFormatter: (value) =>
-          value?.toLocaleString("en-IN"),
+
+         valueFormatter: (value) => {
+          if (value === null || value === undefined || value === "") {
+            return "";
+          }
+
+          const num = Number(String(value).replace(/,/g, ""));
+
+          return Number.isNaN(num) ? value : num.toLocaleString("en-IN");
+        },
       },
       {
         field: "adv_payment_due_date",
@@ -1024,14 +1052,14 @@ export default function EventInformation() {
           {/* Total Budget Amount */}
           <FormControl sx={formControl2rows}>
               <TextField
-                type="number"
+                type="text"
                 label="Total Budget Amount"
                 placeholder="Total Budget Amount"
                 slotProps={{
                           input: { readOnly: true },
                         }}
                 value={formData.totalBudgetAmount}
-                onChange={handleFieldChange("totalBudgetAmount")}
+                onChange={handleAmountChange("totalBudgetAmount")}
                 onKeyDown={(e) => {
                 if (["e", "E", "+", "-", "ArrowUp", "ArrowDown"].includes(e.key)) {
                   e.preventDefault();
@@ -1060,14 +1088,14 @@ export default function EventInformation() {
           {/* Advance Payment */}
           <FormControl sx={formControl2rows}>
             <TextField
-              type="number"
+              type="text"
               label="Advance Payment"
               placeholder="Advance Payment"
               value={formData.advancePayment}
               slotProps={{
                         input: { readOnly: true },
                       }}
-              onChange={handleFieldChange("advancePayment")}
+              onChange={handleAmountChange("advancePayment")}
               onKeyDown={(e) => {
                 if (["e", "E", "+", "-", "ArrowUp", "ArrowDown"].includes(e.key)) {
                   e.preventDefault();
@@ -1274,7 +1302,7 @@ export default function EventInformation() {
             <TextField
               label="Approved Amount"
               placeholder="Approver Amount"
-              type="number"
+              type="text"
               value={formData.approvedamount}
               required
                 error={
@@ -1288,7 +1316,7 @@ export default function EventInformation() {
                     color: formData.approvedamount ? "blue" : "red",
                   },
                 }}
-              onChange={handleFieldChange("approvedamount")}
+              onChange={handleAmountChange("approvedamount")}
               onKeyDown={(e) => {
                 if (["e", "E", "+", "-", "ArrowUp", "ArrowDown"].includes(e.key)) {
                   e.preventDefault();

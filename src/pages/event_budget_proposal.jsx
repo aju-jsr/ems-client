@@ -69,6 +69,9 @@ import { getEventBudgetProposalsAttachment } from "../services/event_budget_prop
 
 import SubmitSuccessPopup from "../components/SubmitSuccessPopup.jsx";
 
+// Format Amount in thousand separator
+import { formatIndianAmount } from "../utils/amountFormatter.js";
+
 
 export default function EventInformation() {
 localStorage.setItem("titel", "Budget Proposal");
@@ -199,6 +202,16 @@ setHeaderTitle("Budget Proposal");
     }));
   };
 
+  //   Handle Amount Change with Indian Number Formatting
+    const handleAmountChange = (field) => (e) => {
+        const formattedValue = formatIndianAmount(e.target.value);
+
+        setFormData((prev) => ({
+            ...prev,
+            [field]: formattedValue,
+        }));        
+    };
+
   const getFinancialYear = () => {
     const today = new Date();
     const year = today.getFullYear();
@@ -279,11 +292,11 @@ setHeaderTitle("Budget Proposal");
         req_emp_name: formData.employeeName,
         financial_year: getFinancialYear(),
         details: formData.budgetDetails,
-        budget_amount: formData.totalBudgetAmount,
+        budget_amount: formData.totalBudgetAmount?.replace(/,/g, "") || 0,
         adv_payment: 
           formData.advancePayment &&
           formData.advancePayment !== ""
-            ? formData.advancePayment
+            ? formData.advancePayment?.replace(/,/g, "") || 0
             : null,
         // adv_payment_due_date: formatDate(formData.advancePaymentDueDate),
         adv_payment_due_date:
@@ -387,12 +400,12 @@ setHeaderTitle("Budget Proposal");
           employeeName: row.req_emp_name,
           financialYear: row.financial_year,
           budgetDetails: row.details,
-          totalBudgetAmount: row.budget_amount,
+          totalBudgetAmount: formatIndianAmount(row.budget_amount),
           advancePayment: row.adv_payment === null ||
             row.adv_payment === undefined ||
             row.adv_payment === ""
             ? ""
-            :row.adv_payment,
+            :formatIndianAmount(row.adv_payment),
           advancePaymentDueDate: row.adv_payment_due_date
             ? dayjs(row.event_start_date)
             : null,
@@ -410,7 +423,7 @@ setHeaderTitle("Budget Proposal");
             row.approved_amount === undefined ||
             row.approved_amount === ""
             ? ""
-            : row.approved_amount,
+            : formatIndianAmount(row.approved_amount),
           approverremarks: row.remarks  === null ||
             row.remarks === undefined ||
             row.remarks === ""
@@ -421,7 +434,7 @@ setHeaderTitle("Budget Proposal");
             row.fin_approved_amount === undefined ||
             row.fin_approved_amount === ""
             ? ""
-            : row.fin_approved_amount,
+            : formatIndianAmount(row.fin_approved_amount),
           financeemarks: row.fin_remarks  === null ||
             row.fin_remarks === undefined ||
             row.fin_remarks === ""
@@ -552,8 +565,19 @@ setHeaderTitle("Budget Proposal");
         </div>
       ),
       type: "number",
-      valueFormatter: (value) =>
-        value?.toLocaleString("en-IN"),
+      // valueFormatter: (value) =>
+      //   value?.toLocaleString("en-IN"),
+
+      valueFormatter: (value) => {
+        if (value === null || value === undefined || value === "") {
+          return "";
+        }
+
+        const num = Number(String(value).replace(/,/g, ""));
+
+        return Number.isNaN(num) ? value : num.toLocaleString("en-IN");
+      },
+
     },
     {
       field: "adv_payment_due_date",
@@ -604,8 +628,16 @@ setHeaderTitle("Budget Proposal");
       headerName: "Amount",
       width: 150,
       // type: "number",
-      valueFormatter: (value) =>
-        value?.toLocaleString("en-IN"),
+       valueFormatter: (value) => {
+        if (value === null || value === undefined || value === "") {
+          return "";
+        }
+
+        const num = Number(String(value).replace(/,/g, ""));
+
+        return Number.isNaN(num) ? value : num.toLocaleString("en-IN");
+      },
+
     },
     
     {
@@ -1346,13 +1378,13 @@ setHeaderTitle("Budget Proposal");
           {/* Total Budget Amount */}
           <FormControl sx={formControl2rows}>
             <TextField
-              type="number"
+              type="text"
               label="Total Budget Amount"
               placeholder="Total Budget Amount"
               required
-                  error={
-                    !formData.totalBudgetAmount
-                  }
+              error={
+                !formData.totalBudgetAmount
+              }
                   sx={{
                     "& .MuiInputLabel-root": {
                       color: formData.totalBudgetAmount ? "blue" : "red",
@@ -1361,21 +1393,30 @@ setHeaderTitle("Budget Proposal");
                       color: formData.totalBudgetAmount ? "blue" : "red",
                     },
                     "& input[type=number]": {
-                    MozAppearance: "textfield",
+                      MozAppearance: "textfield",
                     },
                     "& input[type=number]::-webkit-outer-spin-button, & input[type=number]::-webkit-inner-spin-button":
-                      {
-                        WebkitAppearance: "none",
-                        margin: 0,
-                      },
+                    {
+                      WebkitAppearance: "none",
+                      margin: 0,
+                    },
                   }}
               value={formData.totalBudgetAmount}
-              onChange={handleFieldChange("totalBudgetAmount")}
-              onKeyDown={(e) => {
-                if (["e", "E", "+", "-", "ArrowUp", "ArrowDown"].includes(e.key)) {
-                  e.preventDefault();
-                }
-              }}
+              onChange={handleAmountChange("totalBudgetAmount")}
+                  onKeyDown={(e) => {
+                    if (
+                      [
+                        "e",
+                        "E",
+                        "+",
+                        "-",
+                        "ArrowUp",
+                        "ArrowDown",
+                      ].includes(e.key)
+                    ) {
+                      e.preventDefault();
+                    }
+                  }}
 
               onWheel={(e) => e.target.blur()}
               
@@ -1389,11 +1430,11 @@ setHeaderTitle("Budget Proposal");
           {/* Advance Payment */}
           <FormControl sx={formControl2rows}>
             <TextField
-              type="number"
+              type="text"
               label="Advance Payment"
               placeholder="Advance Payment"
               value={formData.advancePayment}
-              onChange={handleFieldChange("advancePayment")}
+              onChange={handleAmountChange("advancePayment")}
               onKeyDown={(e) => {
                 if (["e", "E", "+", "-", "ArrowUp", "ArrowDown"].includes(e.key)) {
                   e.preventDefault();
@@ -1575,10 +1616,10 @@ setHeaderTitle("Budget Proposal");
                       <TextField
                         label="Approved Amount"
                         placeholder="Approver Amount"
-                        type="number"
+                        type="text"
                         value={formData.approvedamount}
                         required
-                        onChange={handleFieldChange("approvedamount")}
+                        onChange={handleAmountChange("approvedamount")}
                         slotProps={{
                                   input: { readOnly: true },
                                 }}
@@ -1620,10 +1661,10 @@ setHeaderTitle("Budget Proposal");
                               <TextField
                                 label="Approved Amount by Finance"
                                 placeholder="Approved Amount by Finance"
-                                type="number"
+                                type="text"
                                 value={formData.finapprovedamount}
                                 required
-                                onChange={handleFieldChange("finapprovedamount")}
+                                onChange={handleAmountChange("finapprovedamount")}
                                 onKeyDown={(e) => {
                                   if (["e", "E", "+", "-"].includes(e.key)) {
                                     e.preventDefault();

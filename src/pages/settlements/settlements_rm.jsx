@@ -35,6 +35,7 @@ import { useRef } from "react";
 // Style import
 import SectionCard from "../../components/SectionCard";
 import '../../styles/event.css';
+import {wrapHeader} from "../../styles/gridStyle.jsx";
 import { formControl3rows, formControl2rows, formControl4rows } from "../../styles/commonStyles.js";
 
 // File upload Attachment import
@@ -256,7 +257,7 @@ export default function Settlement() {
             field: "settlement_no",
             // headerName: "Settlements No.",
             headerName: "Req No.",
-            width: 120,
+            width: 90,
 
             renderCell: (params) => (
                 <Link
@@ -276,7 +277,7 @@ export default function Settlement() {
                         }, 100);
                     }}
                     sx={{
-                        fontSize: "0.80rem",
+                        fontSize: "0.70rem",
                         fontWeight: "bold",
                         cursor: "pointer",
                     }}
@@ -288,22 +289,24 @@ export default function Settlement() {
         {
             field: "sub_settlement_no",
             headerName: "Sub No",
-            width: 80   ,
+            width: 50,
+            renderHeader: () => wrapHeader("Sub No"),
         },
         {
             field: "department_name",
             headerName: "Department",
-            width: 250,
+            width: 210,
         },
         {
             field: "event_name",
             headerName: "Event Name",
-            width: 200,
+            width: 175,
         },
         {
             field: "request_date",
             headerName: "Request Date",
-            width: 130,
+            width: 90,
+            renderHeader: () => wrapHeader("Request Date"),
             valueFormatter: (value) =>
                 value
                     ? new Date(value).toLocaleDateString("en-GB")
@@ -331,19 +334,21 @@ export default function Settlement() {
         {
             field: "event_proposal_no",
             headerName: "Proposal No",
-            width: 120,
+            width: 90,
+            renderHeader: () => wrapHeader("Proposal No"),
         },
-        {
-            field: "settlement_type",
-            headerName: "Type",
-            width: 100,
-        },
-        
         {
             field: "status_name",
             headerName: "Status",
             width: 100,
         },
+        {
+            field: "type",
+            headerName: "Type",
+            width: 90,
+        },
+        
+        
     ];
 
     // Columns for Actual Expenses Grid columns
@@ -815,7 +820,7 @@ export default function Settlement() {
                                     backgroundColor: "#FFD54F", // Yellow
                                     color: "#000",
                                     fontWeight: "bold",
-                                    fontSize: "0.80rem",
+                                    fontSize: "0.70rem",
                                 },
 
                                 "& .MuiDataGrid-columnHeader": {
@@ -824,12 +829,12 @@ export default function Settlement() {
 
                                 "& .MuiDataGrid-columnHeaderTitle": {
                                     fontWeight: "bold",
-                                    fontSize: "0.80rem",
+                                    fontSize: "0.70rem",
                                 },
 
                                 // Rows
                                 "& .MuiDataGrid-row": {
-                                    fontSize: "0.80rem",
+                                    fontSize: "0.70rem",
                                 },
 
                                 // Cells
@@ -840,7 +845,7 @@ export default function Settlement() {
                                     display: "flex",
                                     alignItems: "center",
                                     py: 1,
-                                    fontSize: "0.80rem",
+                                    fontSize: "0.70rem",
                                     wordWrap: "break-word",
                                     overflowWrap: "break-word",
 
@@ -848,7 +853,7 @@ export default function Settlement() {
 
                                 // Footer
                                 "& .MuiDataGrid-footerContainer": {
-                                    fontSize: "0.80rem",
+                                    fontSize: "0.70rem",
                                 },
                             }}
 
@@ -1488,7 +1493,7 @@ export default function Settlement() {
                                     backgroundColor: "#FFD54F", // Yellow
                                     color: "#000",
                                     fontWeight: "bold",
-                                    fontSize: "0.80rem",
+                                    fontSize: "0.70rem",
                                 },
 
                                 "& .MuiDataGrid-columnHeader": {
@@ -1497,12 +1502,12 @@ export default function Settlement() {
 
                                 "& .MuiDataGrid-columnHeaderTitle": {
                                     fontWeight: "bold",
-                                    fontSize: "0.80rem",
+                                    fontSize: "0.70rem",
                                 },
 
                                 // Rows
                                 "& .MuiDataGrid-row": {
-                                    fontSize: "0.80rem",
+                                    fontSize: "0.70rem",
                                 },
 
                                 // Cells
@@ -1513,7 +1518,7 @@ export default function Settlement() {
                                     display: "flex",
                                     alignItems: "center",
                                     py: 1,
-                                    fontSize: "0.80rem",
+                                    fontSize: "0.70rem",
                                     wordWrap: "break-word",
                                     overflowWrap: "break-word",
 
@@ -1521,7 +1526,7 @@ export default function Settlement() {
 
                                 // Footer
                                 "& .MuiDataGrid-footerContainer": {
-                                    fontSize: "0.80rem",
+                                    fontSize: "0.70rem",
                                 },
                             }}
 

@@ -497,7 +497,7 @@ const initialFormData = {
               
             }}
             sx={{
-              fontSize: "0.80rem",
+              fontSize: "0.70rem",
               fontWeight: "bold",
               cursor: "pointer",
             }}
@@ -668,7 +668,7 @@ const initialFormData = {
                   backgroundColor: "#FFD54F", // Yellow
                   color: "#000",
                   fontWeight: "bold",
-                  fontSize: "0.80rem",
+                  fontSize: "0.70rem",
                 },
 
                 "& .MuiDataGrid-columnHeader": {
@@ -677,12 +677,12 @@ const initialFormData = {
 
                 "& .MuiDataGrid-columnHeaderTitle": {
                   fontWeight: "bold",
-                  fontSize: "0.80rem",
+                  fontSize: "0.70rem",
                 },
 
                 // Rows
                 "& .MuiDataGrid-row": {
-                  fontSize: "0.80rem",
+                  fontSize: "0.70rem",
                 },
 
                 // Cells
@@ -693,12 +693,12 @@ const initialFormData = {
                   display: "flex",
                   alignItems: "center",
                   py: 1,
-                  fontSize: "0.80rem",
+                  fontSize: "0.70rem",
                 },
 
                 // Footer
                 "& .MuiDataGrid-footerContainer": {
-                  fontSize: "0.80rem",
+                  fontSize: "0.70rem",
                 },
               }}
 
@@ -1546,7 +1546,7 @@ const initialFormData = {
                       backgroundColor: "#FFD54F", // Yellow
                       color: "#000",
                       fontWeight: "bold",
-                      fontSize: "0.80rem",
+                      fontSize: "0.70rem",
                     },
 
                     "& .MuiDataGrid-columnHeader": {
@@ -1555,12 +1555,12 @@ const initialFormData = {
 
                     "& .MuiDataGrid-columnHeaderTitle": {
                       fontWeight: "bold",
-                      fontSize: "0.80rem",
+                      fontSize: "0.70rem",
                     },
 
                     // Rows
                     "& .MuiDataGrid-row": {
-                      fontSize: "0.80rem",
+                      fontSize: "0.70rem",
                     },
 
                     // Cells
@@ -1571,12 +1571,12 @@ const initialFormData = {
                       display: "flex",
                       alignItems: "center",
                       py: 1,
-                      fontSize: "0.80rem",
+                      fontSize: "0.70rem",
                     },
 
                     // Footer
                     "& .MuiDataGrid-footerContainer": {
-                      fontSize: "0.80rem",
+                      fontSize: "0.70rem",
                     },
                   }}
                   

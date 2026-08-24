@@ -67,7 +67,7 @@ export const menuConfig = [
     {
         label: "Closure Form",
         icon: ReceiptIcon,
-        permission: "EVENT_CREATE",
+        permission: "EVENT_APPROVE_FIN",
         path: "/closure_form"
     },
 

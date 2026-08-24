@@ -36,6 +36,7 @@ import { useRef } from "react";
 import SectionCard from "../../components/SectionCard";
 import '../../styles/event.css';
 import { formControl3rows, formControl2rows, formControl4rows } from "../../styles/commonStyles.js";
+import {wrapHeader} from "../../styles/gridStyle.jsx";
 
 // File upload Attachment import
 import FileUpload from "../../components/FileUpload";
@@ -62,7 +63,8 @@ import { getProposaReqNo } from "../../services/proposals_req_no_Service.js";
 import { getCheckSettlement } from "../../services/settlements/checksettlementService.js"
 import { formatIndianAmount } from "../../utils/amountFormatter.js";
 import useGetSettlementAmount from "../../hooks/settlements/useGetSettlementAmount.js";
-
+// Date check
+import {isDateBetween} from "../../utils/dateCheck.js";
 
 export default function Settlement() {
     // Set Form Title
@@ -268,7 +270,7 @@ export default function Settlement() {
             field: "settlement_no",
             // headerName: "Settlements No.",
             headerName: "Req No.",
-            width: 120,
+            width: 90,
 
             renderCell: (params) => (
                 <Link
@@ -288,7 +290,7 @@ export default function Settlement() {
                         }, 100);
                     }}
                     sx={{
-                        fontSize: "0.80rem",
+                        fontSize: "0.70rem",
                         fontWeight: "bold",
                         cursor: "pointer",
                     }}
@@ -300,42 +302,37 @@ export default function Settlement() {
         {
             field: "sub_settlement_no",
             headerName: "Sub No",
-            width: 80,
+            width: 50,
+            renderHeader: () => wrapHeader("Sub No"),
         },
         {
             field: "department_name",
             headerName: "Department",
-            width: 250,
+            width: 210,
         },
         {
             field: "event_name",
             headerName: "Event Name",
-            width: 200,
+            width: 162,
         },
         {
             field: "request_date",
             headerName: "Request Date",
-            width: 130,
+            width: 100,
             valueFormatter: (value) =>
                 value
                     ? new Date(value).toLocaleDateString("en-GB")
                     : "",
+            
+            renderHeader: () => wrapHeader("Request Date"),
+
         },
         {
             field: "actual_expense",
             headerName: "Amount",
             width: 100,
-            renderHeader: () => (
-                <div
-                    style={{
-                        whiteSpace: "normal",
-                        lineHeight: "16px",
-                        textAlign: "center",
-                    }}
-                >
-                    Amount
-                </div>
-            ),
+            renderHeader: () => wrapHeader("Amount"),
+            
             type: "number",
             valueFormatter: (value) =>
                 value?.toLocaleString("en-IN"),
@@ -343,18 +340,18 @@ export default function Settlement() {
         {
             field: "event_proposal_no",
             headerName: "Proposal No",
-            width: 120,
+            width: 95,
+            renderHeader: () => wrapHeader("Proposal No"),
         },
-        {
-            field: "settlement_type",
-            headerName: "Type",
-            width: 100,
-        },
-
         {
             field: "status_name",
             headerName: "Status",
             width: 100,
+        },
+        {
+            field: "type",
+            headerName: "Type",
+            width: 90,
         },
     ];
 
@@ -363,8 +360,9 @@ export default function Settlement() {
         {
             field: "expense_date",
             headerName: "Date",
-            width: 140,
-            editable: true,
+            width: 100,
+            renderHeader: () => wrapHeader("Date"),
+            // editable: true,
             type: "date",
             // valueGetter: (value) => (value ? new Date(value) : null),
             valueGetter: (value) => (value ? new Date(value) : null),
@@ -386,14 +384,14 @@ export default function Settlement() {
             field: "expenses_details",
             headerName: "Expense Details",
             width: 250,
-            editable: true,
+            // editable: true,
             type: "text",
         },
         {
             field: "expenses_head",
             headerName: "Expense Head",
             width: 180,
-            editable: true,
+            // editable: true,
             type: "text",
             // valueOptions: expenseHeads,
         },
@@ -401,24 +399,26 @@ export default function Settlement() {
             field: "amount",
             headerName: "Amount",
             width: 120,
-            editable: true,
+            renderHeader: () => wrapHeader("Amount"),
+            // editable: true,
             type: "number",
         },
         {
             field: "has_bill",
             headerName: "Bill (Y/N)",
             width: 120,
-            editable: true,
+            // editable: true,
             type: "singleSelect",
             valueOptions: ["Y", "N"],
         },
         {
             field: "paid_to_party",
             headerName: "Paid to Party (Y/N)",
-            width: 170,
-            editable: true,
+            width: 100,
+            // editable: true,
             type: "singleSelect",
             valueOptions: ["Y", "N"],
+            renderHeader: () => wrapHeader("Paid to Party (Y/N)"),
         },
         {
             field: "actions",
@@ -478,6 +478,7 @@ export default function Settlement() {
         }));
     };
     // Add row handler
+    const requestDateRef = useRef(null);
     const handleAddExpense = () => {
 
         if (
@@ -496,6 +497,14 @@ export default function Settlement() {
             // );
         }
 
+        // date check 
+        if(!isDateBetween(formatDate(expenseForm.expense_date), formatDate(formData.event_start_date),formatDate(formData.event_end_date)))
+        {
+            alert("Expense Date Should be in between Start and End Date.");
+            requestDateRef.current?.focus();    
+            return;
+            
+        }
 
 
         const newRow = {
@@ -611,6 +620,9 @@ export default function Settlement() {
                 String(row.amount || "0").replace(/,/g, "")
             ),
         }));
+
+        
+        
 
         const settlementJson = {
             settlement_no: subsettlement === true
@@ -945,7 +957,7 @@ export default function Settlement() {
                                     backgroundColor: "#FFD54F", // Yellow
                                     color: "#000",
                                     fontWeight: "bold",
-                                    fontSize: "0.80rem",
+                                    fontSize: "0.70rem",
                                 },
 
                                 "& .MuiDataGrid-columnHeader": {
@@ -954,12 +966,12 @@ export default function Settlement() {
 
                                 "& .MuiDataGrid-columnHeaderTitle": {
                                     fontWeight: "bold",
-                                    fontSize: "0.80rem",
+                                    fontSize: "0.70rem",
                                 },
 
                                 // Rows
                                 "& .MuiDataGrid-row": {
-                                    fontSize: "0.80rem",
+                                    fontSize: "0.70rem",
                                 },
 
                                 // Cells
@@ -970,7 +982,7 @@ export default function Settlement() {
                                     display: "flex",
                                     alignItems: "center",
                                     py: 1,
-                                    fontSize: "0.80rem",
+                                    fontSize: "0.70rem",
                                     wordWrap: "break-word",
                                     overflowWrap: "break-word",
 
@@ -978,7 +990,7 @@ export default function Settlement() {
 
                                 // Footer
                                 "& .MuiDataGrid-footerContainer": {
-                                    fontSize: "0.80rem",
+                                    fontSize: "0.70rem",
                                 },
                             }}
 
@@ -1602,7 +1614,7 @@ export default function Settlement() {
                                     format="DD-MM-YYYY"
                                     value={expenseForm.expense_date}
                                     onChange={handleExpDateChange("expense_date")}
-                                    
+                                    inputRef={requestDateRef}
                                     slotProps={{
                                         textField: {
                                             fullWidth: true,
@@ -1814,10 +1826,6 @@ export default function Settlement() {
                             <DataGrid
                                 rows={expenseRows}
                                 columns={actualExpensesColumns}
-                                // processRowUpdate={processRowUpdate}
-                                // experimentalFeatures={{ newEditingApi: true }}
-                                // disableRowSelectionOnClick
-                                // autoHeight
                                 pageSizeOptions={[5, 10]}
                                 initialState={{
                                     pagination: {
@@ -1833,7 +1841,7 @@ export default function Settlement() {
                                         backgroundColor: "#FFD54F", // Yellow
                                         color: "#000",
                                         fontWeight: "bold",
-                                        fontSize: "0.80rem",
+                                        fontSize: "0.70rem",
                                     },
 
                                     "& .MuiDataGrid-columnHeader": {
@@ -1842,12 +1850,12 @@ export default function Settlement() {
 
                                     "& .MuiDataGrid-columnHeaderTitle": {
                                         fontWeight: "bold",
-                                        fontSize: "0.80rem",
+                                        fontSize: "0.70rem",
                                     },
 
                                     // Rows
                                     "& .MuiDataGrid-row": {
-                                        fontSize: "0.80rem",
+                                        fontSize: "0.70rem",
                                     },
 
                                     // Cells
@@ -1858,7 +1866,7 @@ export default function Settlement() {
                                         display: "flex",
                                         alignItems: "center",
                                         py: 1,
-                                        fontSize: "0.80rem",
+                                        fontSize: "0.70rem",
                                         wordWrap: "break-word",
                                         overflowWrap: "break-word",
 
@@ -1866,7 +1874,7 @@ export default function Settlement() {
 
                                     // Footer
                                     "& .MuiDataGrid-footerContainer": {
-                                        fontSize: "0.80rem",
+                                        fontSize: "0.70rem",
                                     },
                                 }}
 
@@ -2273,7 +2281,7 @@ export default function Settlement() {
                                                             backgroundColor: "#FFD54F", // Yellow
                                                             color: "#000",
                                                             fontWeight: "bold",
-                                                            fontSize: "0.80rem",
+                                                            fontSize: "0.70rem",
                                                         },
 
                                                         "& .MuiDataGrid-columnHeader": {
@@ -2282,12 +2290,12 @@ export default function Settlement() {
 
                                                         "& .MuiDataGrid-columnHeaderTitle": {
                                                             fontWeight: "bold",
-                                                            fontSize: "0.80rem",
+                                                            fontSize: "0.70rem",
                                                         },
 
                                                         // Rows
                                                         "& .MuiDataGrid-row": {
-                                                            fontSize: "0.80rem",
+                                                            fontSize: "0.70rem",
                                                         },
 
                                                         // Cells
@@ -2298,12 +2306,12 @@ export default function Settlement() {
                                                             display: "flex",
                                                             alignItems: "center",
                                                             py: 1,
-                                                            fontSize: "0.80rem",
+                                                            fontSize: "0.70rem",
                                                         },
 
                                                         // Footer
                                                         "& .MuiDataGrid-footerContainer": {
-                                                            fontSize: "0.80rem",
+                                                            fontSize: "0.70rem",
                                                         },
                                                     }}
 

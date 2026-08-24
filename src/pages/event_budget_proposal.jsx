@@ -532,7 +532,7 @@ setHeaderTitle("Budget Proposal");
         
       
           sx={{
-            fontSize: "0.80rem",
+            fontSize: "0.70rem",
             fontWeight: "bold",
             cursor: "pointer",
           }}
@@ -711,49 +711,14 @@ setHeaderTitle("Budget Proposal");
               }}
               disableRowSelectionOnClick
               getRowHeight={() => "auto"}
-              // onRowSelectionModelChange={(ids) => {
-              //   console.log(ids);
-              // }}
-
-              // sx={{
-              //     border: 1,
-              //     borderColor: "divider",
-
-              //     "& .MuiDataGrid-columnHeaders": {
-              //         backgroundColor: "#FFC107",
-              //         fontWeight: "bold",
-              //         fontSize: "0.8rem",
-              //         borderBottom: "2px solid #BDBDBD",
-              //     },
-
-              //     "& .MuiDataGrid-columnHeaderTitle": {
-              //         fontWeight: 700,
-              //         fontSize: "0.8rem",
-              //     },
-
-              //     "& .MuiDataGrid-cell": {
-              //         fontSize: "0.8rem",
-              //         py: 1,
-              //         alignItems: "center",
-              //     },
-
-              //     "& .MuiDataGrid-row:nth-of-type(even)": {
-              //         backgroundColor: "#FAFAFA",
-              //     },
-
-              //     "& .MuiDataGrid-row:hover": {
-              //         backgroundColor: "#FFF8E1",
-              //     },
-              // }}
-
-              // For Yellow header
+              
               sx={{
                 // Header
                 "& .MuiDataGrid-columnHeaders": {
                   backgroundColor: "#FFD54F", // Yellow
                   color: "#000",
                   fontWeight: "bold",
-                  fontSize: "0.80rem",
+                  fontSize: "0.70rem",
                 },
 
                 "& .MuiDataGrid-columnHeader": {
@@ -762,12 +727,12 @@ setHeaderTitle("Budget Proposal");
 
                 "& .MuiDataGrid-columnHeaderTitle": {
                   fontWeight: "bold",
-                  fontSize: "0.80rem",
+                  fontSize: "0.70rem",
                 },
 
                 // Rows
                 "& .MuiDataGrid-row": {
-                  fontSize: "0.80rem",
+                  fontSize: "0.70rem",
                 },
 
                 // Cells
@@ -778,12 +743,12 @@ setHeaderTitle("Budget Proposal");
                   display: "flex",
                   alignItems: "center",
                   py: 1,
-                  fontSize: "0.80rem",
+                  fontSize: "0.70rem",
                 },
 
                 // Footer
                 "& .MuiDataGrid-footerContainer": {
-                  fontSize: "0.80rem",
+                  fontSize: "0.70rem",
                 },
               }}
 
@@ -1719,7 +1684,7 @@ setHeaderTitle("Budget Proposal");
                     backgroundColor: "#FFD54F", // Yellow
                     color: "#000",
                     fontWeight: "bold",
-                    fontSize: "0.80rem",
+                    fontSize: "0.70rem",
                   },
 
                   "& .MuiDataGrid-columnHeader": {
@@ -1728,12 +1693,12 @@ setHeaderTitle("Budget Proposal");
 
                   "& .MuiDataGrid-columnHeaderTitle": {
                     fontWeight: "bold",
-                    fontSize: "0.80rem",
+                    fontSize: "0.70rem",
                   },
 
                   // Rows
                   "& .MuiDataGrid-row": {
-                    fontSize: "0.80rem",
+                    fontSize: "0.70rem",
                   },
 
                   // Cells
@@ -1744,12 +1709,12 @@ setHeaderTitle("Budget Proposal");
                     display: "flex",
                     alignItems: "center",
                     py: 1,
-                    fontSize: "0.80rem",
+                    fontSize: "0.70rem",
                   },
 
                   // Footer
                   "& .MuiDataGrid-footerContainer": {
-                    fontSize: "0.80rem",
+                    fontSize: "0.70rem",
                   },
                 }}
 

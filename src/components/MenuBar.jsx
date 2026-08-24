@@ -17,6 +17,7 @@ import { menuConfig } from "../config/menuConfig";
 
 export default function MenuBar() {
     const { setHeaderTitle } = useHeader();
+    const menuFontSize = "13px";
 
     const navigate = useNavigate();
 
@@ -61,25 +62,26 @@ export default function MenuBar() {
             sx={{
                 display: "flex",
                 alignItems: "center",
-                bgcolor: "#e4e9ee",
+                // bgcolor: "#e4e9ee",
+                bgcolor: "#6fa0e5",
                 px: 2,
-                py: 1
+                py: 1,
+
+                "& .MuiButton-root": {
+                    fontSize: menuFontSize,
+                    fontWeight: "bold",
+                    color: "#fff",
+                },
+
+                // Button hover
+                "& .MuiButton-root:hover": {
+                    color: "#fff",
+                    backgroundColor: "rgba(255,255,255,0.12)",
+                },
             }}
         >
 
             {menuConfig.map(menu => {
-                // if (menu.label === 'Reports' || menu.label === 'Registration'){
-                //     return(
-                //         <Button
-                //             key={menu.label}
-                            
-                //         >
-
-                //             {menu.label}
-
-                //         </Button>
-                //     );
-                // }
 
                 if (menu.children) {
 
@@ -87,33 +89,30 @@ export default function MenuBar() {
 
                         <Button
                             key={menu.label}
-                            // color="inherit"
-                            
                             endIcon={<KeyboardArrowDownIcon />}
                             onClick={(e) => handleOpen(e, menu)}
+                            sx={{
+                                fontSize: menuFontSize,
+                            }}
                         >
-
                             {menu.label}
-
                         </Button>
 
                     );
-
                 }
-
                 if (menu.action === "logout") {
 
                     return (
 
                         <Button
                             key={menu.label}
-                            // color="inherit"
-                            sx={{ ml: "auto" }}
+                            sx={{ 
+                                ml: "auto",
+                                fontSize: menuFontSize,
+                             }}
                             onClick={logout}
                         >
-
                             {menu.label}
-
                         </Button>
 
                     );
@@ -124,23 +123,52 @@ export default function MenuBar() {
 
                     <Button
                         key={menu.label}
-                        // color="inherit"
                         disabled={!hasPermission(menu.permission)}
                         onClick={() => navigate(menu.path)}
+                        sx={{
+                            fontSize: menuFontSize,
+                        }}
                     >
-
                         {menu.label}
-
                     </Button>
-
                 );
-
             })}
 
             <Menu
                 anchorEl={anchorEl}
                 open={Boolean(anchorEl)}
                 onClose={handleClose}
+
+                slotProps={{
+                    paper: {
+                        sx: {
+                            "& .MuiMenuItem-root": {
+                                fontSize: menuFontSize,
+                                fontWeight: "bold",
+                                color: "#fff",
+                                backgroundColor: "#6bacee",
+                                minHeight: "32px",
+                                borderBottom: "1px solid rgba(255,255,255,0.4)",
+                            },
+
+                            "& .MuiMenuItem-root:hover": {
+                                backgroundColor: "#6bacee",
+                                color: "#fff",
+                            },
+
+                            "& .MuiListItemText-primary": {
+                                fontSize: menuFontSize,
+                                fontWeight: "bold",
+                                color: "#fff",
+                            },
+
+                            "& .MuiListItemIcon-root": {
+                                minWidth: "30px",
+                                color: "#fff",
+                            },
+                        },
+                    },
+                }}
             >
 
                 {currentMenu?.children.map(item => {
@@ -152,35 +180,23 @@ export default function MenuBar() {
                         <MenuItem
                             key={item.label}
                             disabled={!hasPermission(item.permission)}
+                            fontSize={menuFontSize}
                             onClick={() => {
 
                                 navigate(item.path);
-                                if(item.path === '/event_budget_proposal_rm'){
-                                    // localStorage.setItem("title", "Budget Proposal - RM Approval")
-                                    setHeaderTitle("Budget Proposal - RM Approval");
-                                }else if(item.path === '/event_budget_proposal_fin'){
-                                    // localStorage.setItem("title", "Budget Proposal - Finance")
-                                    setHeaderTitle("Budget Proposal - Finance");
-                                }else if(item.path === '/event_budget_proposal'){
-                                    setHeaderTitle("Budget Proposal");
-                                }
+                                
                                 handleClose();
 
                             }}
                         >
 
                             <ListItemIcon>
-
                                 <Icon />
-
                             </ListItemIcon>
 
-                            <ListItemText>
-
-                                {item.label}
-
-                            </ListItemText>
-
+                           <ListItemText
+                                primary={item.label}
+                        />
                         </MenuItem>
 
                     );

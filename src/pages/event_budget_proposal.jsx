@@ -359,8 +359,9 @@ setHeaderTitle("Budget Proposal");
     loadData,
   } = useEventBudgetProposalsListForRequester(empId);
   
-  const onRowSelected = async (Selrow) => {
-    const response = await getEventBudgetProposalsAttachment(Selrow.id);
+  const onRowSelected = async (params) => {
+    
+    const response = await getEventBudgetProposalsAttachment(params.id);
     // setAttachments(response.data)
     setShowFileUpload(false);
     setshowFileList(true);
@@ -369,14 +370,13 @@ setHeaderTitle("Budget Proposal");
     setDisableSubmit(true);
 
     rows.map((row) => {
-      if (row.id === Selrow.id) {
-        setReqId(Selrow.id);
+      if (row.id === params.id) {
+        setReqId(params.id);
         if(row.status_id === 3 || row.status_id === 4 || row.status_id === 6 || row.status_id === 7){
           setApproverSection(true);
         }else{
           setApproverSection(false);
         }
-          
 
         setFormData((prev) => ({
           ...prev,
@@ -443,17 +443,13 @@ setHeaderTitle("Budget Proposal");
 
         }));
 
-
-        // Scroll to Event Information
-        // eventInfoRef.current?.scrollIntoView({
-        //   behavior: "smooth",
-        //   block: "start",
-        // });
-
+        document.getElementById("eventInformation")?.scrollIntoView({
+                behavior: "smooth",
+                block: "start",
+              });
       }
 
     });
-
   };
 
   const initialFormData = {
@@ -690,11 +686,8 @@ setHeaderTitle("Budget Proposal");
             <DataGrid
               rows={rows}
               columns={columns}
-              // getRowClassName={(params) =>
-              //     params.row.status_id === 6
-              //         ? "rejected-row"
-              //         : ""
-              // }
+              onRowClick={onRowSelected}
+              
               getRowClassName={(params) =>
                   [6, 4].includes(params.row.status_id)
                       ? "rejected-row"
@@ -749,6 +742,9 @@ setHeaderTitle("Budget Proposal");
                 // Footer
                 "& .MuiDataGrid-footerContainer": {
                   fontSize: "0.70rem",
+                },
+                "& .MuiDataGrid-row:hover": {
+                    cursor: "pointer",
                 },
               }}
 

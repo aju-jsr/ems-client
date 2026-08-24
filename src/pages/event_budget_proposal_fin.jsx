@@ -367,13 +367,13 @@ const initialFormData = {
     financeemarks: ""
   };
   
-  const onRowSelected = async (Selrow) => {
+  const onRowSelected = async (params) => {
     
     setFormData(initialFormData);
     setisapproved(false);
     setisrejeted(false);
 
-    const response = await getEventBudgetProposalsAttachment(Selrow.id);
+    const response = await getEventBudgetProposalsAttachment(params.id);
     setShowFileUpload(false);
     setshowFileList(true);
     setFileList(response.data);
@@ -382,11 +382,11 @@ const initialFormData = {
     let selected_status = "";
     
     rows.map((row) => {
-      if(row.id === Selrow.id){
+      if (row.id === params.id) {
         // console.log(row);
-          selected_status = row.status_name;
-          setReqId(Selrow.id);
-          setFormData((prev) => ({
+        selected_status = row.status_name;
+        setReqId(params.id);
+        setFormData((prev) => ({
           ...prev,
           requestNo: row.request_no,
           proposal: row.proposal_id,
@@ -395,12 +395,12 @@ const initialFormData = {
           eventName: row.event_name,
           status: row.status_name,
           unit: row.unit_id,
-          eventStartDate:  row.event_start_date
-              ? dayjs(row.event_start_date)
-              : null,
+          eventStartDate: row.event_start_date
+            ? dayjs(row.event_start_date)
+            : null,
           eventEndDate: row.event_end_date
-              ? dayjs(row.event_start_date)
-              : null,
+            ? dayjs(row.event_start_date)
+            : null,
           schoolId: row.school_id,
           departmentId: row.department_id,
           headName: row.name_of_head,
@@ -411,8 +411,8 @@ const initialFormData = {
           totalBudgetAmount: formatIndianAmount(row.budget_amount),
           advancePayment: formatIndianAmount(row.adv_payment),
           advancePaymentDueDate: row.adv_payment_due_date
-              ? dayjs(row.event_start_date)
-              : null,
+            ? dayjs(row.event_start_date)
+            : null,
           accountHolderName: row.acc_holder_name,
           accountNumber: row.acc_number,
           ifscCode: row.ifsc_code,
@@ -421,36 +421,40 @@ const initialFormData = {
           accountType: row.acc_type_id === null ||
             row.acc_type_id === undefined ||
             row.acc_type_id === ""
-              ? ""
-              : row.acc_type_id,
+            ? ""
+            : row.acc_type_id,
           approverremarks: row.remarks === null ||
             row.remarks === undefined ||
             row.remarks === ""
-              ? ""
-              : row.remarks,
-          
+            ? ""
+            : row.remarks,
+
           // row.remarks,
-          approvedamount:row.approved_amount === null ||
+          approvedamount: row.approved_amount === null ||
             row.approved_amount === undefined ||
             row.approved_amount === ""
-              ? ""
-              : formatIndianAmount(row.approved_amount),
-          
+            ? ""
+            : formatIndianAmount(row.approved_amount),
+
           // fin Remarls
-          financeemarks:row.fin_remarks === null ||
+          financeemarks: row.fin_remarks === null ||
             row.fin_remarks === undefined ||
             row.fin_remarks === ""
-              ? ""
-              : row.fin_remarks,
+            ? ""
+            : row.fin_remarks,
           // fin Approved Amt
-          finapprovedamount:row.fin_approved_amount === null ||
+          finapprovedamount: row.fin_approved_amount === null ||
             row.fin_approved_amount === undefined ||
             row.fin_approved_amount === ""
-              ? ""
-              : formatIndianAmount(row.fin_approved_amount),
+            ? ""
+            : formatIndianAmount(row.fin_approved_amount),
 
-      }));
+        }));
 
+        document.getElementById("eventInformation")?.scrollIntoView({
+                behavior: "smooth",
+                block: "start",
+              });
 
       }
         
@@ -645,6 +649,7 @@ const initialFormData = {
             <DataGrid
               rows={rows}
               columns={columns}
+              onRowClick={onRowSelected}
               getRowClassName={(params) =>
                   [6, 4].includes(params.row.status_id)
                       ? "rejected-row"
@@ -699,6 +704,9 @@ const initialFormData = {
                 // Footer
                 "& .MuiDataGrid-footerContainer": {
                   fontSize: "0.70rem",
+                },
+                "& .MuiDataGrid-row:hover": {
+                    cursor: "pointer",
                 },
               }}
 

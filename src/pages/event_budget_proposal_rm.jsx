@@ -277,17 +277,17 @@ export default function EventInformation() {
   // 1273 is login emp id, need to pass runtime when login functionlaty created 
 
 
-  const onRowSelected = async (Selrow) => {
+  const onRowSelected = async (params) => {
     setFormData(initialFormData);
     setisapproved(false);
     setisrejeted(false);
-    const response = await getEventBudgetProposalsAttachment(Selrow.id);
+    const response = await getEventBudgetProposalsAttachment(params.id);
     setFileList(response.data);
     rows.map((row) => {
-      if(row.id === Selrow.id){
+      if(row.id === params.id){
         
         // console.log(row);
-          setReqId(Selrow.id);
+          setReqId(params.id);
           setFormData((prev) => ({
           ...prev,
           requestNo: row.request_no,
@@ -334,9 +334,12 @@ export default function EventInformation() {
               : row.acc_type_id,
           approverremarks: row.remarks,
           approvedamount:formatIndianAmount(row.approved_amount)
+        }));
 
-      }));
-
+        document.getElementById("eventInformation")?.scrollIntoView({
+                behavior: "smooth",
+                block: "start",
+              });
 
       }
         
@@ -502,6 +505,7 @@ export default function EventInformation() {
               rows={rows}
               columns={columns}
               loading={loading}
+              onRowClick={onRowSelected}
               pageSizeOptions={[5, 10, 20, 50]}
               initialState={{
                 pagination: {
@@ -512,42 +516,7 @@ export default function EventInformation() {
               }}
               disableRowSelectionOnClick
               getRowHeight={() => "auto"}
-              // onRowSelectionModelChange={(ids) => {
-              //   console.log(ids);
-              // }}
-
-              // sx={{
-              //     border: 1,
-              //     borderColor: "divider",
-
-              //     "& .MuiDataGrid-columnHeaders": {
-              //         backgroundColor: "#FFC107",
-              //         fontWeight: "bold",
-              //         fontSize: "0.8rem",
-              //         borderBottom: "2px solid #BDBDBD",
-              //     },
-
-              //     "& .MuiDataGrid-columnHeaderTitle": {
-              //         fontWeight: 700,
-              //         fontSize: "0.8rem",
-              //     },
-
-              //     "& .MuiDataGrid-cell": {
-              //         fontSize: "0.8rem",
-              //         py: 1,
-              //         alignItems: "center",
-              //     },
-
-              //     "& .MuiDataGrid-row:nth-of-type(even)": {
-              //         backgroundColor: "#FAFAFA",
-              //     },
-
-              //     "& .MuiDataGrid-row:hover": {
-              //         backgroundColor: "#FFF8E1",
-              //     },
-              // }}
-
-              // For Yellow header
+              
               sx={{
                 // Header
                 "& .MuiDataGrid-columnHeaders": {
@@ -585,6 +554,9 @@ export default function EventInformation() {
                 // Footer
                 "& .MuiDataGrid-footerContainer": {
                   fontSize: "0.70rem",
+                },
+                "& .MuiDataGrid-row:hover": {
+                    cursor: "pointer",
                 },
               }}
 

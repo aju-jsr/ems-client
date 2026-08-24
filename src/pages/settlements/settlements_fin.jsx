@@ -187,20 +187,20 @@ export default function Settlement() {
     // 
     const [settlementamount, setSettlementAmount] = useState(false);
     
-    const onRowSelected = async (Selrow) => {
+    const onRowSelected = async (params) => {
 
         const role = JSON.parse(localStorage.getItem("user"))?.role;
         let selected_status = "";
-        // setSettlementid(Selrow.id);
-        const response = await getSettlement(Selrow.id);
+        // setSettlementid(params.id);
+        const response = await getSettlement(params.id);
 
         setExpenseRows(response.actualExpenses);
         setFileList(response.supportingDocuments);
 
         response.settlement.map((row) => {
-            if (row.id === Selrow.id) {
+            if (row.id === params.id) {
                 selected_status = row.status_name;
-                setReqId(Selrow.id);
+                setReqId(params.id);
                 const fin_approved_amount_formated = formatIndianAmount(row.fin_approved_amount === null ||
                         row.fin_approved_amount === undefined ||
                         row.fin_approved_amount === ""
@@ -265,6 +265,11 @@ export default function Settlement() {
                     fin_approved_amount: fin_approved_amount_formated,
                     fin_remarks: row.fin_remarks
                 }));
+
+                document.getElementById("eventInformation")?.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start",
+                });
             }
             
 
@@ -897,6 +902,7 @@ export default function Settlement() {
                         <DataGrid
                             rows={rows}
                             columns={settlementsColumns}
+                            onRowClick={onRowSelected}
                             getRowClassName={(params) =>
                                 [6, 4].includes(params.row.status_id)
                                     ? "rejected-row"
@@ -954,6 +960,9 @@ export default function Settlement() {
                                 // Footer
                                 "& .MuiDataGrid-footerContainer": {
                                     fontSize: "0.70rem",
+                                },
+                                "& .MuiDataGrid-row:hover": {
+                                    cursor: "pointer",
                                 },
                             }}
 

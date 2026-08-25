@@ -17,7 +17,7 @@ import { formControl3rows, formControl2rows } from "../styles/commonStyles";
 import SectionCard from "../components/SectionCard";
 import { ROLE_PERMISSIONS } from "../config/rolePermissions";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 
 import useLogin from "../hooks/useLogin";
 
@@ -26,6 +26,11 @@ import { useNavigate, Link } from "react-router-dom";
 import { useHeader } from "../components/HeaderContext.jsx";
 
 export default function Login() {
+
+    const loginIdRef = useRef(null);
+    useEffect(() => {
+        loginIdRef.current?.focus();
+    }, []);
 
     const { setHeaderTitle } = useHeader();
     setHeaderTitle("Login");
@@ -134,6 +139,7 @@ export default function Login() {
                                 fullWidth
                                 required
                                 label="Login ID"
+                                inputRef={loginIdRef}
                                 value={loginId}
                                 onChange={(e) => setLoginId(e.target.value)}
                             />
@@ -176,19 +182,11 @@ export default function Login() {
                                         width: 150,
                                     }}
                                 >
-                                    Login
+                                    {proposalSubmitting ? "Login..." : "Login"}
+                                    
                                 </Button>
                             </Box>
                         </Grid>
-
-                        {/* <Grid size={12}>
-                            <Typography align="center">
-                                Don't have an account?{" "}
-                                <Link to="/register">
-                                    Registration
-                                </Link>
-                            </Typography>
-                        </Grid> */}
 
                     </Grid>
                 </Box>

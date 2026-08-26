@@ -107,7 +107,8 @@ export default function MenuBar() {
                             onMouseEnter={(event) =>
                                 handleOpen(event, menu)
                             }
-                            // onMouseLeave={handleClose}
+                            // FIX 1: Uncommented this so the timer triggers when leaving the button
+                            onMouseLeave={handleClose} 
                             sx={{
                                 fontSize: menuFontSize,
                                 cursor: "pointer",
@@ -164,15 +165,14 @@ export default function MenuBar() {
                 onMouseEnter={handleSubMenuEnter}
                 onMouseLeave={handleClose}
                 disableAutoFocusItem
-                // MenuListProps={{
-                //     onMouseEnter: handleSubMenuEnter,
-                //     onMouseLeave: handleClose,
-                // }}
+                // FIX 2: Stop root/backdrop from blocking mouse hover events, reset it on paper
                 slotProps={{
-                    onMouseEnter: handleSubMenuEnter,
-                    onMouseLeave: handleClose,
+                    root: {
+                        sx: { pointerEvents: "none" }
+                    },
                     paper: {
                         sx: {
+                            pointerEvents: "auto", // Crucial so clicks/hovers work inside the dropdown
                             "& .MuiMenuItem-root": {
                                 fontSize: menuFontSize,
                                 fontWeight: "bold",

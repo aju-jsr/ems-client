@@ -72,6 +72,8 @@ import SubmitSuccessPopup from "../components/SubmitSuccessPopup.jsx";
 // Format Amount in thousand separator
 import { formatIndianAmount } from "../utils/amountFormatter.js";
 
+import {emailSend} from "../utils/emailSend.js"
+
 
 export default function EventInformation() {
 localStorage.setItem("titel", "Budget Proposal");
@@ -159,7 +161,6 @@ setHeaderTitle("Budget Proposal");
     error: proposalSubmitError,
     submitEventBudgetProposal,
   } = useEventBudgetProposals();
-
 
   const handleFieldChange = (field) => (event) => {
     if(field === "proposal"){
@@ -340,11 +341,23 @@ setHeaderTitle("Budget Proposal");
       }));
 
       await loadData(); // Refresh the settlements list after successful submission
+
+      // send email
+      const manager = employees.find(
+        (employee) => employee.emp_id === JSON.parse(localStorage.getItem("user"))?.manager_id
+      );
+
+      const req_emp = employees.find(
+        (employee) => employee.emp_id === JSON.parse(localStorage.getItem("user"))?.empId
+      );
+
+      const managerEmail = manager?.email;
+      const subject = `"Budget Proposal ${response[0]?.request_no} Created – Approval Required"`;
+      const cc = req_emp?.email;
+
+      await emailSend(managerEmail, subject, formData.eventName, response[0]?.request_no, 
+        JSON.parse(localStorage.getItem("user"))?.name, cc);
       
-      // // window.location.reload();
-      // setTimeout(() => {
-      //   window.location.reload();
-      // }, 10000);
     } catch (error) {
       console.error(error);
       setSubmitSuccess(false);

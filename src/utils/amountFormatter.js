@@ -3,7 +3,7 @@ export const formatIndianAmount = (value) => {
     let rawValue = String(value ?? "").replace(/,/g, "");
 
     // Allow only numbers and decimal point
-    if (!/^\d*\.?\d*$/.test(rawValue)) {
+    if (!/^-?\d*\.?\d*$/.test(rawValue)) {
         return "";
     }
 

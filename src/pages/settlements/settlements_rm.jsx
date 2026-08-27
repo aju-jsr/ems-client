@@ -65,6 +65,12 @@ import { getSettlement } from "../../services/settlements/getSettlementById_Serv
 import { getProposaReqNo } from "../../services/proposals_req_no_Service.js";
 import { getCheckSettlement } from "../../services/settlements/checksettlementService.js";
 import { formatIndianAmount } from "../../utils/amountFormatter.js";
+// Employees
+import useEmpolyees from "../../hooks/useEmpolyee";
+// Send Email
+import {emailSend} from "../../utils/emailSend.js"
+
+const FIN_EMAIL = import.meta.env.VITE_FIN_APPROVER_EMAIL;
 
 
 export default function Settlement() {
@@ -100,6 +106,7 @@ export default function Settlement() {
     // Submit form
     const [disableSubmit, setDisableSubmit] = useState(false);
     const [submitSuccess, setSubmitSuccess] = useState(false);
+    const [submitReject, setSubmitReject] = useState(false);
     const [settlementResponse, setSettlementResponse] = useState(null);
     const [reqId, setReqId] = useState("");
 
@@ -172,10 +179,18 @@ export default function Settlement() {
 
     // get the Account Type from DB using Hook
     const {  acctypes } = useAccTypes();
+
+    // get Employees
+    const { employees} = useEmpolyees();
+
+    
     
     const onRowSelected = async (params) => {
         // setSettlementid(params.id);
+        handleClear();
         setDisableSubmit(true);
+        setSubmitSuccess(false);
+        setSubmitReject(false);
         const response = await getSettlement(params.id);
 
         setExpenseRows(response.actualExpenses);
@@ -185,10 +200,21 @@ export default function Settlement() {
             if (row.id === params.id) {
                 setReqId(params.id);
                 const rm_approved_amt_formated = formatIndianAmount(row.approved_amount === null ||
-                                        row.approved_amount === undefined ||
-                                        row.approved_amount === ""
-                                            ? ""
-                                            : row.approved_amount);
+                    row.approved_amount === undefined ||
+                    row.approved_amount === ""
+                    ? ""
+                    : row.approved_amount);
+                const actual_expense_total_formated = formatIndianAmount(row.actual_expense === null ||
+                    row.actual_expense === undefined ||
+                    row.actual_expense === ""
+                    ? ""
+                    : row.actual_expense);
+                const balance_excess_formated = formatIndianAmount(row.balance_excess === null ||
+                    row.balance_excess === undefined ||
+                    row.balance_excess === ""
+                    ? ""
+                    : row.balance_excess);
+
                 setFormData((prev) => ({
                     ...prev,
                     settlement_no: row.settlement_no,
@@ -225,8 +251,8 @@ export default function Settlement() {
                         row.adv_amount === ""
                             ? ""
                             : row.adv_amount,
-                    actual_expense_total: row.actual_expense,
-                    balance_excess: row.balance_excess,
+                    actual_expense_total: actual_expense_total_formated,
+                    balance_excess: balance_excess_formated,
                     remarks: row.remarks,
                     acc_holder_name: row.acc_holder_name,
                     acc_number: row.acc_number,
@@ -236,12 +262,35 @@ export default function Settlement() {
                     acc_type_id: row.acc_type_id,
                     approved_by: row.approved_by,
                     approved_date: row.approved_date,
-                    approved_amount: rm_approved_amt_formated,
-                    approved_remarks: row.approved_remarks,
-                    fin_approved_by: row.fin_approved_by,
-                    fin_approved_date: row.fin_approved_date,
-                    fin_approved_amount: row.fin_approved_amount,
-                    fin_remarks: row.fin_remarks
+                    approved_amount:
+                        rm_approved_amt_formated === null || rm_approved_amt_formated === ""
+                            ? null
+                            : rm_approved_amt_formated,
+
+                        approved_remarks:
+                            row.approved_remarks === null || row.approved_remarks === ""
+                                ? null
+                                : row.approved_remarks,
+                    fin_approved_by:
+                        row.fin_approved_by === null || row.fin_approved_by === ""
+                            ? null
+                            : row.fin_approved_by,
+
+                    fin_approved_date:
+                        row.fin_approved_date === null || row.fin_approved_date === ""
+                            ? null
+                            : row.fin_approved_date,
+
+                    fin_approved_amount:
+                        row.fin_approved_amount === null || row.fin_approved_amount === ""
+                            ? null
+                            : row.fin_approved_amount,
+
+                    fin_remarks:
+                        row.fin_remarks === null || row.fin_remarks === ""
+                            ? null
+                            : row.fin_remarks,
+
                 }));
 
                 document.getElementById("eventInformation")?.scrollIntoView({
@@ -333,8 +382,15 @@ export default function Settlement() {
                 </div>
             ),
             type: "number",
-            valueFormatter: (value) =>
-                value?.toLocaleString("en-IN"),
+            valueFormatter: (value) => {
+                if (value === null || value === undefined || value === "") {
+                return "";
+                }
+
+                const num = Number(String(value).replace(/,/g, ""));
+
+                return Number.isNaN(num) ? value : num.toLocaleString("en-IN");
+            },
         },
         {
             field: "event_proposal_no",
@@ -401,6 +457,15 @@ export default function Settlement() {
             width: 120,
             editable: true,
             type: "number",
+            valueFormatter: (value) => {
+                if (value === null || value === undefined || value === "") {
+                return "";
+                }
+
+                const num = Number(String(value).replace(/,/g, ""));
+
+                return Number.isNaN(num) ? value : num.toLocaleString("en-IN");
+            },
         },
         {
             field: "has_bill",
@@ -451,10 +516,19 @@ export default function Settlement() {
     const formatDate = (value) => value ? dayjs(value).format("YYYY-MM-DD") : "";
 
     const handleExpFieldChange = (field) => (event) => {
-        setExpenseForm((prevData) => ({
-            ...prevData,
-            [field]: event.target.value,
-        }));
+        if (field === "actual_expense_total" || field === "balance_excess") {
+            const formattedValue = formatIndianAmount(event.target.value);
+
+            setExpenseForm((prev) => ({
+                ...prev,
+                [field]: formattedValue,
+            }));
+        } else {
+            setExpenseForm((prevData) => ({
+                ...prevData,
+                [field]: event.target.value,
+            }));
+        }
     }
 
     const handleExpDateChange = (field) => (value) => {
@@ -584,13 +658,16 @@ export default function Settlement() {
         // Set Status based on Approve or Reject
         let  s_id = 0;
         let msg = "";
+        let eventType;
         if (action === "approve") {
             s_id = 3;
             msg = "Settlement No - '" + formData.settlement_no + "' Approved";
+            eventType="SETTLEMENT_RM_APPROVED";
             console.log("Approve proposal");
         } else if (action === "reject") {
             s_id = 4;
              msg = "Settlement No - '" + formData.settlement_no + "' Rejected";
+             eventType="SETTLEMENT_RM_REJECTED";
             console.log("Reject proposal");
         }
 
@@ -614,9 +691,36 @@ export default function Settlement() {
             // const response = await submitSettlement(settlementJson);
             console.log("API Response:", response);
             setSettlementResponse(response);
-            setSubmitSuccess(true);
+            if(eventType === "SETTLEMENT_RM_APPROVED"){
+                setSubmitSuccess(true);
+                setSubmitReject(false);
+            }else{
+                setSubmitSuccess(false);
+                setSubmitReject(true);
+            }
+            
 
             await loadData(); // Refresh the settlements list after successful submission
+
+            // send email
+
+            const comments = formData.approved_remarks;
+
+            const req_emp = employees.find(
+                (employee) => employee.emp_id === formData.req_emp_id
+            );
+
+            const rm = employees.find(
+                (employee) => employee.emp_id === JSON.parse(localStorage.getItem("user"))?.empId
+            );
+
+            const subject = `"Budget Proposal ${formData.settlement_no} Approved By RM – Action Required Form Finance"`;
+
+            const cc = [req_emp?.email, rm?.email].filter(Boolean);
+            // const cc = ["rajnishkumarjsr@gmail.com", "rajnish_kumar48@yahoo.com"].filter(Boolean);
+
+            await emailSend(eventType, FIN_EMAIL, subject, formData.event_name, formData.settlement_no,
+                formData.req_emp_name, cc, comments);
             
         } catch (error) {
             console.error(error);
@@ -1583,7 +1687,7 @@ export default function Settlement() {
                             </FormControl>
                             <FormControl required sx={formControl4rows} >
                                  <TextField
-                                    type="number"
+                                    type="text"
                                     id="txtActualExpense"
                                     label="Actual Expense (c)"
                                     placeholder="Actual Expense (C)"
@@ -1596,7 +1700,7 @@ export default function Settlement() {
                             </FormControl>
                             <FormControl required sx={formControl4rows} >
                                  <TextField
-                                    type="number"
+                                    type="text"
                                     id="txtBalanceExpense"
                                     label="Balance/Excess (A-C)"
                                     placeholder="Balance/Excess (A-C)"
@@ -1871,12 +1975,11 @@ export default function Settlement() {
                 {submitSuccess && (
                     <Alert severity="success" sx={{ mt: 2 }}>
                         <strong>Settlement Approved successfully.</strong>
-
-                        {/* <br />
-
-                        settlement_no:{" "}
-                        {settlementResponse[0]?.settlement_no} */}
-
+                    </Alert>
+                )}
+                {submitReject && (
+                    <Alert severity="error" sx={{ mt: 2 }}>
+                        <strong>Settlement Rejected successfully.</strong>
                     </Alert>
                 )}
 
@@ -1895,10 +1998,10 @@ export default function Settlement() {
                         mt: 3,                    // Top margin
                     }}
                 >
-                    <Button variant="contained" type="submit" disabled={settlementSubmitting} onClick={() => setAction("approve")}>
+                    <Button variant="contained" type="submit" disabled={settlementSubmitting || submitReject || submitSuccess} onClick={() => setAction("approve")}>
                         {settlementSubmitting ? "Submitting..." : "Approve"}
                     </Button>
-                    <Button variant="contained" type="submit" disabled={settlementSubmitting} onClick={() => setAction("reject")}>
+                    <Button variant="contained" type="submit" disabled={settlementSubmitting || submitReject || submitSuccess} onClick={() => setAction("reject")}>
                         {settlementSubmitting ? "Submitting..." : "Reject"}
                     </Button>
                 </Box>

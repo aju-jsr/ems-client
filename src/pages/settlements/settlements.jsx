@@ -66,6 +66,11 @@ import useGetSettlementAmount from "../../hooks/settlements/useGetSettlementAmou
 // Date check
 import {isDateBetween} from "../../utils/dateCheck.js";
 
+// mail send
+import {emailSend} from "../../utils/emailSend.js"
+
+import useEmpolyees from "../../hooks/useEmpolyee.js";
+
 export default function Settlement() {
     // Set Form Title
     const { setHeaderTitle } = useHeader();
@@ -174,6 +179,9 @@ export default function Settlement() {
     // get the Account Type from DB using Hook
     const { acctypes } = useAccTypes();
 
+    // get Employees
+    const { employees} = useEmpolyees();
+
     const onRowSelected = async (params) => {
 
         // setSettlementid(params.id);
@@ -239,8 +247,8 @@ export default function Settlement() {
                         row.adv_amount === ""
                         ? ""
                         : row.adv_amount,
-                    actual_expense_total: row.actual_expense,
-                    balance_excess: row.balance_excess,
+                    actual_expense_total: formatIndianAmount(row.actual_expense),
+                    balance_excess: formatIndianAmount(row.balance_excess),
                     remarks: row.remarks,
                     acc_holder_name: row.acc_holder_name,
                     acc_number: row.acc_number,
@@ -340,8 +348,17 @@ export default function Settlement() {
             renderHeader: () => wrapHeader("Amount"),
             
             type: "number",
-            valueFormatter: (value) =>
-                value?.toLocaleString("en-IN"),
+            // valueFormatter: (value) =>
+            //     value?.toLocaleString("en-IN"),
+            valueFormatter: (value) => {
+                if (value === null || value === undefined || value === "") {
+                return "";
+                }
+
+                const num = Number(String(value).replace(/,/g, ""));
+
+                return Number.isNaN(num) ? value : num.toLocaleString("en-IN");
+            },
         },
         {
             field: "event_proposal_no",
@@ -461,7 +478,7 @@ export default function Settlement() {
     const formatDate = (value) => value ? dayjs(value).format("YYYY-MM-DD") : "";
 
     const handleExpFieldChange = (field) => (event) => {
-        if (field === "amount" || field === "actual_expense_total") {
+        if (field === "amount" || field === "actual_expense_total" || field === "balance_excess") {
             const formattedValue = formatIndianAmount(event.target.value);
 
             setExpenseForm((prev) => ({
@@ -708,10 +725,22 @@ export default function Settlement() {
 
            await loadData(); // Refresh the settlements list after successful submission
 
-            // // window.location.reload();
-            // setTimeout(() => {
-            //     window.location.reload();
-            // }, 10000);
+            // send email
+            const manager = employees.find(
+                (employee) => employee.emp_id === JSON.parse(localStorage.getItem("user"))?.manager_id
+            );
+
+            const req_emp = employees.find(
+                (employee) => employee.emp_id === JSON.parse(localStorage.getItem("user"))?.empId
+            );
+
+            const managerEmail = manager?.email;
+            const subject = `"Settlement ${response[0]?.settlement_no} Created – Approval Required"`;
+            const cc = [req_emp?.email].filter(Boolean);
+            // const cc = ["rajnishkumarjsr@gmail.com"].filter(Boolean);
+
+            await emailSend("SETTLEMENT_CREATED", managerEmail, subject, formData.event_name, response[0]?.settlement_no,
+                JSON.parse(localStorage.getItem("user"))?.name, cc, null);
 
         } catch (error) {
             console.error(error);
@@ -1946,7 +1975,7 @@ export default function Settlement() {
                         </FormControl>
                         <FormControl required sx={formControl4rows} >
                             <TextField
-                                type="number"
+                                type="text"
                                 id="txtBalanceExpense"
                                 label="Balance/Excess (A-C)"
                                 placeholder="Balance/Excess (A-C)"

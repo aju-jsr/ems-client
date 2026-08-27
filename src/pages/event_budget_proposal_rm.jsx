@@ -69,6 +69,11 @@ import AttachmentList from "../components/AttachmentList"
 // Format Amount in thousand separator
 import { formatIndianAmount } from "../utils/amountFormatter.js";
 
+// Send Email
+import {emailSend} from "../utils/emailSend.js"
+
+const FIN_EMAIL = import.meta.env.VITE_FIN_APPROVER_EMAIL;
+
 
 export default function EventInformation() {
   const { setHeaderTitle } = useHeader();
@@ -242,20 +247,38 @@ export default function EventInformation() {
     try{
       const response = await patchEventBudgetProposal(proposalJson);
       setProposalResponse(response);
+      let eventType;
       if (action === "approve") {
         setisapproved(true);
         setisrejeted(false);
+        eventType = "RM_APPROVED";
       } else if (action === "reject") {
         setisapproved(false);
         setisrejeted(true);
+        eventType = "RM_REJECTED";
       }
 
       await loadData(); // Refresh the settlements list after successful submission
       
-      // // window.location.reload();
-      // setTimeout(() => {
-      //   window.location.reload();
-      // }, 1000);
+      // send email
+      
+      const comments = formData.approverremarks;
+      
+      const req_emp = employees.find(
+        (employee) => employee.emp_id === formData.employeeId
+      );
+
+      const rm = employees.find(
+        (employee) => employee.emp_id === JSON.parse(localStorage.getItem("user"))?.empId
+      );
+
+      const subject = `"Budget Proposal ${formData.requestNo} Approved By RM – Action Required Form Finance"`;
+      
+      const cc = [req_emp?.email, rm?.email].filter(Boolean);
+      // const cc = ["rajnishkumarjsr@gmail.com", "rajnish_kumar48@yahoo.com"].filter(Boolean);
+
+      await emailSend(eventType, FIN_EMAIL, subject, formData.eventName, formData.requestNo,
+        formData.employeeName, cc, comments);
     
     } catch (error) {
       console.error(error);
@@ -1327,7 +1350,7 @@ export default function EventInformation() {
         )}
         
         {isrejeted && (
-          <Alert severity="success" sx={{ mt: 2 }}>
+          <Alert severity="error" sx={{ mt: 2 }}>
             <strong>Proposal Rejected.</strong>
           </Alert>
         )}

@@ -72,6 +72,9 @@ import { useHeader } from "../components/HeaderContext";
 // Format Amount in thousand separator
 import { formatIndianAmount } from "../utils/amountFormatter.js";
 
+// Send Email
+import {emailSend} from "../utils/emailSend.js"
+
 
 export default function EventInformation() {
 
@@ -117,7 +120,8 @@ export default function EventInformation() {
     amtpaidbyfin:"",
     advancepaidon:null,
     paymentmode:"",
-    transactionid:""
+    transactionid:"",
+    manager_id:"",
   });
 
   const [submittedJson, setSubmittedJson] = useState("");
@@ -247,13 +251,16 @@ export default function EventInformation() {
     event.preventDefault();
     // setSubmitSuccess(false);
     let  s_id = 0;
+    let eventType;
     if (action === "approve") {
       // setStatasId(3);
       s_id = 7;
+      eventType="FINANCE_APPROVED";
       console.log("Approve proposal");
     } else if (action === "reject") {
       // setStatasId(4);
       s_id = 6;
+      eventType="FINANCE_REJECTED";
       console.log("Reject proposal");
     }
 
@@ -303,6 +310,26 @@ export default function EventInformation() {
 
       await AdvAmt_loadData();
       await loadData(); // Refresh the settlements list after successful submission
+
+      // send email
+
+      const comments = formData.financeemarks;
+
+      const req_emp = employees.find(
+        (employee) => employee.emp_id === formData.employeeId
+      );
+
+      const rm = employees.find(
+        (employee) => employee.emp_id === formData.manager_id
+      );
+
+      const subject = `"Budget Proposal ${formData.requestNo} Approved By RM – Action Required Form Finance"`;
+
+      const cc = [req_emp?.email, rm?.email].filter(Boolean);
+      // const cc = ["rajnishkumarjsr@gmail.com", "rajnish_kumar48@yahoo.com"].filter(Boolean);
+
+      await emailSend(eventType, req_emp?.email, subject, formData.eventName, formData.requestNo,
+        formData.employeeName, cc, comments);
           
     } catch (error) {
       console.error(error);
@@ -448,6 +475,8 @@ const initialFormData = {
             row.fin_approved_amount === ""
             ? ""
             : formatIndianAmount(row.fin_approved_amount),
+
+            manager_id: row.manager_id,
 
         }));
 
@@ -1735,7 +1764,7 @@ const initialFormData = {
         )}
         
         {isrejeted && (
-          <Alert severity="success" sx={{ mt: 2 }}>
+          <Alert severity="error" sx={{ mt: 2 }}>
             <strong>Proposal Rejected.</strong>
           </Alert>
         )}

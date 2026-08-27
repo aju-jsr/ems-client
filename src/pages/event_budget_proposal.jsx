@@ -353,10 +353,11 @@ setHeaderTitle("Budget Proposal");
 
       const managerEmail = manager?.email;
       const subject = `"Budget Proposal ${response[0]?.request_no} Created – Approval Required"`;
-      const cc = req_emp?.email;
+      const cc = [req_emp?.email].filter(Boolean);
+      // const cc = ["rajnishkumarjsr@gmail.com"].filter(Boolean);
 
-      await emailSend(managerEmail, subject, formData.eventName, response[0]?.request_no, 
-        JSON.parse(localStorage.getItem("user"))?.name, cc);
+      await emailSend("PROPOSAL_CREATED", managerEmail, subject, formData.eventName, response[0]?.request_no, 
+        JSON.parse(localStorage.getItem("user"))?.name, cc, null);
       
     } catch (error) {
       console.error(error);

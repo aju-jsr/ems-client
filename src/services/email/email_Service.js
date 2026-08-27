@@ -7,21 +7,16 @@ const API_URL= API_DOMAIN + API;
 
 export const postEmail = async (emailData) => {
   try {
-    // const {
-    //     submittedJson,
-    //     approverEmail,
-    //     requestorEmail,
-    //     subject,
-    //     htmlBody,
-    // } = emailData;
 
     const requestBody = {
+        eventType: emailData.eventType,
         to: emailData.to,
         subject: emailData.subject,
         proposalTitle: emailData.proposalTitle,
         requestNo: emailData.requestNo,
         requestorName: emailData.requestorName,
         cc: emailData.cc,
+        comments: emailData.comments,
     };
     const response = await axios.post(
       API_URL,

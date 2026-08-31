@@ -13,6 +13,8 @@ import {
   Autocomplete
 } from "@mui/material";
 
+import axios from "axios";
+
 import { DataGrid } from "@mui/x-data-grid";
 
 import {
@@ -72,7 +74,12 @@ import SubmitSuccessPopup from "../components/SubmitSuccessPopup.jsx";
 // Format Amount in thousand separator
 import { formatIndianAmount } from "../utils/amountFormatter.js";
 
+// Email send
 import {emailSend} from "../utils/emailSend.js"
+
+// File Upload and Download
+import { postFile } from "../services/file/file_upload_Service.js";
+// import { getfile } from "../services/file/file_download_Servoce.js";
 
 
 export default function EventInformation() {
@@ -229,6 +236,58 @@ setHeaderTitle("Budget Proposal");
 
   const formatDate = (value) => value ? dayjs(value).format("YYYY-MM-DD") : "";
 
+  const uploadAttachments = async () => {
+    if (!attachments || attachments.length === 0) {
+      return [];
+    }
+
+    const attachmentList = [];
+
+    for (let index = 0; index < attachments.length; index++) {
+      const file = attachments[index];
+
+      try {
+        // 1. Request pre-signed S3 URL from backend
+        const fileJson = {
+          fileName: file.name,
+          contentType: file.type,
+        };
+
+        const response = await postFile(fileJson);
+
+        const { uploadUrl, key } = response;
+
+        const uploadResponse = await axios.put(
+          uploadUrl,
+          file,
+          {
+            headers: {
+              "Content-Type": file.type,
+            },
+          }
+        );
+
+        console.log("S3 upload response:", uploadResponse.status);
+
+        // 3. Build DB attachment object
+        attachmentList.push({
+          sequence: index + 1,
+          fileName: key,
+          fileSize: file.size,
+          fileType: file.type,
+          file_path: uploadUrl,
+        });
+
+      } catch (error) {
+        console.error(`Failed to upload ${file.name}`, error);
+
+        throw new Error(`Failed to upload file: ${file.name}`);
+      }
+    }
+
+    return attachmentList;
+  };
+
   const handleSubmit = async (event) => {
 
     event.preventDefault();
@@ -267,13 +326,15 @@ setHeaderTitle("Budget Proposal");
         return;
     }
     
+    const attachmentList = await uploadAttachments();
 
-    const attachmentList = attachments.map((file, index) => ({
-      sequence: index + 1,
-      fileName: file.name,
-      fileSize: file.size,
-      fileType: file.type,
-    }));
+    // const attachmentList = attachments.map((file, index) => ({
+      
+    //   sequence: index + 1,
+    //   fileName: file.name,
+    //   fileSize: file.size,
+    //   fileType: file.type,
+    // }));
 
     const proposalJson = {
 
@@ -330,34 +391,70 @@ setHeaderTitle("Budget Proposal");
       const response = await submitEventBudgetProposal(proposalJson);
       console.log("API Response:", response);
 
-      setProposalResponse(response);
-      setSubmitSuccess(true);
-    // Update Request No. on the form
-      setFormData((prev) => ({
-        ...prev,
-        requestNo:
-          response[0]?.request_no ||
-          prev.requestNo,
-      }));
+      // const response_file = await getfile("uploads/1787996494293-4_hvbshdbvhsbch_skldcklsd - Copy.png");
+      // const { downloadUrl } = await response_file.json();
+      // window.open(response_file.downloadUrl, "_blank");
 
-      await loadData(); // Refresh the settlements list after successful submission
+      // setFileUrl(response_file.downloadUrl); // Set the expiring secure URL
+      
+      if(response[0].id){
+        setProposalResponse(response);
+        setSubmitSuccess(true);
+      
+        setFormData((prev) => ({
+          ...prev,
+          requestNo:
+            response[0]?.request_no ||
+            prev.requestNo,
+        }));
 
-      // send email
-      const manager = employees.find(
-        (employee) => employee.emp_id === JSON.parse(localStorage.getItem("user"))?.manager_id
-      );
+        // for (let index = 0; index < attachmentList.length; index++) {
+        //   const file = attachmentList[index];
 
-      const req_emp = employees.find(
-        (employee) => employee.emp_id === JSON.parse(localStorage.getItem("user"))?.empId
-      );
+        //   const uploadResponse = await axios.put(
+        //     file.file_path,
+        //     file,
+        //     {
+        //       headers: {
+        //         "Content-Type": file.fileType,
+        //       },
+        //     }
+        //   );
 
-      const managerEmail = manager?.email;
-      const subject = `"Budget Proposal ${response[0]?.request_no} Created – Approval Required"`;
-      const cc = [req_emp?.email].filter(Boolean);
-      // const cc = ["rajnishkumarjsr@gmail.com"].filter(Boolean);
+        //   console.log("S3 upload response:", uploadResponse.status);
+        // }
 
-      await emailSend("PROPOSAL_CREATED", managerEmail, subject, formData.eventName, response[0]?.request_no, 
-        JSON.parse(localStorage.getItem("user"))?.name, cc, null);
+        await loadData(); // Refresh the settlements list after successful submission
+
+        // send email
+        const manager = employees.find(
+          (employee) => employee.emp_id === JSON.parse(localStorage.getItem("user"))?.manager_id
+        );
+
+        const req_emp = employees.find(
+          (employee) => employee.emp_id === JSON.parse(localStorage.getItem("user"))?.empId
+        );
+
+        const managerEmail = manager?.email;
+        const subject = `"Budget Proposal ${response[0]?.request_no} Created – Approval Required"`;
+        const cc = [req_emp?.email].filter(Boolean);
+
+        let eventname
+        if(formData.proposal === 2){
+          eventname = formData.partyName
+        }else{
+          eventname = formData.eventName
+        }
+        // const cc = ["rajnishkumarjsr@gmail.com"].filter(Boolean);
+
+        await emailSend("PROPOSAL_CREATED", managerEmail, subject, eventname, response[0]?.request_no, 
+          JSON.parse(localStorage.getItem("user"))?.name, cc, null);
+
+        
+        
+      }
+
+      
       
     } catch (error) {
       console.error(error);

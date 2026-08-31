@@ -11,10 +11,14 @@ import {
 
 import DescriptionIcon from "@mui/icons-material/Description";
 
+import { getfile } from "../services/file/file_download_Servoce";
+
 export default function AttachmentList({ files = [] }) {
 
-  const openFile = (file) => {
-    window.open(file.file_path, "_blank");
+  const openFile = async (file) => {
+    const response_file = await getfile(file.file_name);
+    const path = response_file.downloadUrl.replace("//uploads", "/uploads");
+    window.open(path, "_blank");
   };
 
   return (

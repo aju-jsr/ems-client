@@ -288,6 +288,10 @@ setHeaderTitle("Budget Proposal");
     return attachmentList;
   };
 
+  const eventStartDateRef = useRef(null);
+  const eventEndDateRef = useRef(null);
+  const proposalForeRef = useRef(null);
+
   const handleSubmit = async (event) => {
 
     event.preventDefault();
@@ -310,6 +314,7 @@ setHeaderTitle("Budget Proposal");
           formData.proposal === 1) {
         alert("The Event Start Date cannot be earlier than today's date.");
         setDisableSubmit(false);
+        eventStartDateRef.current?.focus();
         return;
     }
 
@@ -317,12 +322,15 @@ setHeaderTitle("Budget Proposal");
           formData.proposal === 1) {
         alert("The Event End Date cannot be earlier than today's date.");
         setDisableSubmit(false);
+        eventEndDateRef.current?.focus();
         return;
     }
 
     
     if (formData.eventEndDate.isBefore(formData.eventStartDate, "day")) {
         alert("The Event End Date cannot be earlier than the Event Start Date. Please select a valid end date.");
+        setDisableSubmit(false);
+        eventEndDateRef.current?.focus();
         return;
     }
     
@@ -608,6 +616,7 @@ setHeaderTitle("Budget Proposal");
     // Clear any validation errors if applicable
     setAttachmentError(false);
     // setErrors({});
+    setSubmitSuccess(false);
   };
 
   const columns = [
@@ -1129,6 +1138,7 @@ setHeaderTitle("Budget Proposal");
                     onChange={handleDateChange("eventStartDate")}
                     slotProps={{
                       textField: {
+                        inputRef: eventStartDateRef,
                         fullWidth: true,
                         required: true,
                         error: !formData.eventStartDate,
@@ -1159,6 +1169,7 @@ setHeaderTitle("Budget Proposal");
                     onChange={handleDateChange("eventEndDate")}
                     slotProps={{
                       textField: { 
+                        inputRef: eventEndDateRef,
                         fullWidth: true, 
                         required: true,
                         error: !formData.eventEndDate,

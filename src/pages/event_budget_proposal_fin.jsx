@@ -674,7 +674,7 @@ const initialFormData = {
         {/* Proposal List */}
       <fieldset>
         <legend>Proposal List</legend>
-          <Box sx={{ height: 410, width: 1000 }}>
+          <Box sx={{ height: { xs: 420, md: 410 }, width: "100%", maxWidth: 1000, overflowX: "auto" }}>
             <DataGrid
               rows={rows}
               columns={columns}
@@ -1561,7 +1561,7 @@ const initialFormData = {
           {/* Advance Payment List */}
           <fieldset>
             <legend>Advance Payment List</legend>
-              <Box sx={{ height: 300, width: 900 }}>
+              <Box sx={{ height: { xs: 360, md: 300 }, width: "100%", maxWidth: 900, overflowX: "auto" }}>
                 <DataGrid
                   rows={rowsAdvAmt}
                   columns={columnsAdvAmt}

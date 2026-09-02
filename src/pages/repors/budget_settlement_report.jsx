@@ -318,7 +318,7 @@ export default function Report() {
             <Box component="form">
                 <fieldset>
                     <legend>Filters</legend>
-                    <Box sx={{ height: 100, width: 1000 }}>
+                    <Box sx={{ width: "100%", maxWidth: 1000, minHeight: { xs: "auto", md: 100 } }}>
                         <FormControl sx={formControl3rows}>
                             <Autocomplete
                                 options={employees}
@@ -397,7 +397,7 @@ export default function Report() {
                         </FormControl>
                        
                     </Box>
-                    <Box sx={{ height: 120, width: 1000 }}>
+                    <Box sx={{ width: "100%", maxWidth: 1000, minHeight: { xs: "auto", md: 120 } }}>
                         <FormControl sx={formControl3rows}>
                             <Autocomplete
                                 options={units}
@@ -476,7 +476,7 @@ export default function Report() {
 
                 <fieldset>
                     <legend>Proposal List</legend>
-                    <Box sx={{ height: 370, width: 1000 }}>
+                    <Box sx={{ height: { xs: 420, md: 370 }, width: "100%", maxWidth: 1000, overflowX: "auto" }}>
                         <DataGrid
                             rows={report}
                             columns={proposalColumns}

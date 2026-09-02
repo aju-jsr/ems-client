@@ -45,6 +45,16 @@ export default function MenuBar() {
         setCurrentMenu(menu);
     };
 
+    const handleToggle = (event, menu) => {
+        if (currentMenu?.label === menu.label && anchorEl === event.currentTarget) {
+            setAnchorEl(null);
+            setCurrentMenu(null);
+            return;
+        }
+
+        handleOpen(event, menu);
+    };
+
     // Close submenu
     const handleClose = () => {
         if (closeTimer.current) {
@@ -76,15 +86,23 @@ export default function MenuBar() {
             sx={{
                 display: "flex",
                 alignItems: "center",
+                flexWrap: { xs: "nowrap", md: "wrap" },
                 bgcolor: "#6fa0e5",
-                px: 2,
+                px: { xs: 1, md: 2 },
                 py: 1,
+                gap: { xs: 0.5, md: 0 },
+                overflowX: { xs: "auto", md: "visible" },
+                overflowY: "hidden",
+                WebkitOverflowScrolling: "touch",
 
                 "& .MuiButton-root": {
                     fontSize: menuFontSize,
                     fontWeight: "bold",
                     color: "#fff",
                     cursor: "pointer",
+                    flex: "0 0 auto",
+                    minWidth: { xs: "max-content", md: 64 },
+                    px: { xs: 1, md: 1.5 },
                 },
 
                 "& .MuiButton-root:hover": {
@@ -107,6 +125,9 @@ export default function MenuBar() {
                             onMouseEnter={(event) =>
                                 handleOpen(event, menu)
                             }
+                            onClick={(event) =>
+                                handleToggle(event, menu)
+                            }
                             // FIX 1: Uncommented this so the timer triggers when leaving the button
                             onMouseLeave={handleClose} 
                             sx={{
@@ -125,7 +146,7 @@ export default function MenuBar() {
                         <Button
                             key={menu.label}
                             sx={{
-                                ml: "auto",
+                                ml: { xs: 0, md: "auto" },
                                 fontSize: menuFontSize,
                                 cursor: "pointer",
                             }}

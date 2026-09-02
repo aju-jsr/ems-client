@@ -14,22 +14,27 @@ export default function Header(title) {
       sx={{
         bgcolor: "#004681",
         color: "#fff",
-        borderRadius: "6px 6px 0 0",
-        px: 3,
-        py: 2.5,
+        borderRadius: { xs: 0, sm: "6px 6px 0 0" },
+        px: { xs: 1.5, sm: 2, md: 3 },
+        py: { xs: 1.5, md: 2.5 },
       }}
     >
       <Box
         sx={{
           display: "flex",
           justifyContent: "space-between",
-          alignItems: "flex-start",
+          alignItems: { xs: "stretch", sm: "flex-start" },
+          flexDirection: { xs: "column", sm: "row" },
+          gap: { xs: 1.5, md: 2 },
         }}
       >
         <Box
           sx={{
             display: "flex",
-            alignItems: "center",
+            alignItems: { xs: "flex-start", sm: "center" },
+            flexDirection: { xs: "column", sm: "row" },
+            gap: { xs: 1, sm: 0 },
+            minWidth: 0,
           }}
         >
           {/* University Logo */}
@@ -38,18 +43,18 @@ export default function Header(title) {
             src={ajuLogo}
             alt="Arka Jain University"
             sx={{
-              height: 60,
-              width: 160,
+              height: { xs: 46, sm: 54, md: 60 },
+              width: { xs: 124, sm: 146, md: 160 },
               bgcolor: "#fff",
               borderRadius: 1,
               p: 0.5,
             }}
           />
 
-          <Box sx={{ ml: 2 }}>
+          <Box sx={{ ml: { xs: 0, sm: 2 }, minWidth: 0 }}>
             <Typography
               sx={{
-                fontSize: 30,
+                fontSize: { xs: 20, sm: 24, md: 30 },
                 fontWeight: 700,
                 lineHeight: 1.2,
                 color: "#fff",
@@ -63,7 +68,7 @@ export default function Header(title) {
             <Typography
               sx={{
                 mt: 0.5,
-                fontSize: 15,
+                fontSize: { xs: 13, md: 15 },
                 fontWeight: 500,
                 textAlign: "left",
               }}
@@ -73,7 +78,7 @@ export default function Header(title) {
           </Box>
         </Box>
 
-        <Box sx={{ textAlign: "right" }}>
+        <Box sx={{ textAlign: { xs: "left", sm: "right" } }}>
           {/* <Typography
             sx={{
               fontSize: 14,
@@ -85,7 +90,7 @@ export default function Header(title) {
 
           <Typography
             sx={{
-              fontSize: 22,
+              fontSize: { xs: 16, sm: 18, md: 22 },
               fontWeight: 700,
               lineHeight: 1.3,
             }}

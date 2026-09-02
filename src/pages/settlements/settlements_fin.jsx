@@ -898,7 +898,7 @@ export default function Settlement() {
                 {/* Settlements List */}
                 <fieldset>
                     <legend>Requested Settlement</legend>
-                    <Box sx={{ height: 370, width: 1000 }}>
+                    <Box sx={{ height: { xs: 420, md: 370 }, width: "100%", maxWidth: 1000, overflowX: "auto" }}>
                         <DataGrid
                             rows={rows}
                             columns={settlementsColumns}
@@ -1571,7 +1571,7 @@ export default function Settlement() {
                                 </Select>
                             </FormControl>
                         </Grid> */}
-                        <Box sx={{ height: 370, width: 1000 }}>
+                        <Box sx={{ height: { xs: 420, md: 370 }, width: "100%", maxWidth: 1000, overflowX: "auto" }}>
                         {/* <Button
                             variant="contained"
                             onClick={handleAddExpense}
@@ -2026,7 +2026,7 @@ export default function Settlement() {
                                 {/* Advance Payment List */}
                                 <fieldset>
                                     <legend>Settlement Payment List</legend>
-                                    <Box sx={{ height: 300, width: 900 }}>
+                                    <Box sx={{ height: { xs: 360, md: 300 }, width: "100%", maxWidth: 900, overflowX: "auto" }}>
                                         <DataGrid
                                             rows={rowsSettlementAmt}
                                             columns={columnsSettlementAmt}

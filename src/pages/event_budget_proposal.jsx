@@ -802,7 +802,7 @@ setHeaderTitle("Budget Proposal");
       {/* Proposal List */}
       <fieldset>
         <legend>Proposal List</legend>
-          <Box sx={{ height: 370, width: 1000 }}>
+          <Box sx={{ height: { xs: 420, md: 370 }, width: "100%", maxWidth: 1000, overflowX: "auto" }}>
             <DataGrid
               rows={rows}
               columns={columns}
@@ -1780,7 +1780,7 @@ setHeaderTitle("Budget Proposal");
       { formData.status === 'Approved by Finance' &&(
           <fieldset>
             <legend>Advance Amount Paid</legend>
-            <Box sx={{ height: 300, width: 745 }}>
+            <Box sx={{ height: { xs: 360, md: 300 }, width: "100%", maxWidth: 745, overflowX: "auto" }}>
               <DataGrid
                 rows={rowsAdvAmt}
                 columns={columnsAdvAmt}
@@ -1904,7 +1904,7 @@ setHeaderTitle("Budget Proposal");
         </Box>
         
 
-        {submittedJson && (
+        {/* {submittedJson && (
           <Box
             component="pre"
             sx={{
@@ -1918,7 +1918,7 @@ setHeaderTitle("Budget Proposal");
             }}
           >
           </Box>
-        )}
+        )} */}
       </Box>
       
 

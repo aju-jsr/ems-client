@@ -1131,7 +1131,7 @@ export default function ClosureForm() {
                 {/* Advance */}
                 <fieldset>
                     <legend>Advance Amount Paid</legend>
-                    <Box sx={{ height: 300, width: 745 }}>
+                    <Box sx={{ height: { xs: 360, md: 300 }, width: "100%", maxWidth: 745, overflowX: "auto" }}>
                         <DataGrid
                             rows={rowsAdvAmt}
                             columns={columnsAdvAmt}
@@ -1202,7 +1202,7 @@ export default function ClosureForm() {
                 <fieldset >
                     <legend>Expenses</legend>
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
-                        <Box sx={{ height: 370, width: 1000 }}>
+                        <Box sx={{ height: { xs: 420, md: 370 }, width: "100%", maxWidth: 1000, overflowX: "auto" }}>
                             <DataGrid
                                 rows={expenseRows}
                                 columns={ExpensesColumns}
@@ -1531,7 +1531,7 @@ export default function ClosureForm() {
 
                             </FormControl>
                         </Grid>
-                        <Box sx={{ height: 70, width: 1000 }}>
+                        <Box sx={{ width: "100%", maxWidth: 1000, minHeight: { xs: "auto", md: 70 } }}>
                             <Button
                                 variant="contained"
                                 onClick={handleAddExpense}

@@ -111,15 +111,18 @@ export default function Login() {
                     justifyContent: "center",
                     alignItems: "center",
                     minHeight: "60vh",
+                    width: "100%",
                 }}
             >
                 <Box
                     component="fieldset"
                     sx={{
-                        width: 400,
+                        width: "100%",
+                        maxWidth: 400,
                         border: "1px solid #ccc",
                         borderRadius: 2,
-                        p: 3,
+                        p: { xs: 2, sm: 3 },
+                        boxSizing: "border-box",
                     }}
                 >
                     <legend
@@ -179,7 +182,7 @@ export default function Login() {
                                     variant="contained"
                                     color="primary"
                                     sx={{
-                                        width: 150,
+                                        width: { xs: "100%", sm: 150 },
                                     }}
                                 >
                                     {proposalSubmitting ? "Login..." : "Login"}

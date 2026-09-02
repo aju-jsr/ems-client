@@ -99,10 +99,13 @@ export default function Register() {
               justifyContent: "center",
               alignItems: "center",
               minHeight: "70vh", // Centers vertically
+              width: "100%",
+              px: { xs: 1, sm: 2 },
+              boxSizing: "border-box",
           }}
       >
         
-      <Paper sx={{ p: 4, width: 400,  }} elevation={4}>
+      <Paper sx={{ p: { xs: 2, sm: 4 }, width: "100%", maxWidth: 400, boxSizing: "border-box" }} elevation={4}>
 {/* 
         <Typography
           variant="h5"

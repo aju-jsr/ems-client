@@ -91,7 +91,7 @@ export default function EventBudgetGrid(
   ];
 
   return (
-    <Box sx={{ height: 500, width: 1000 }}>
+    <Box sx={{ height: { xs: 420, md: 500 }, width: "100%", maxWidth: 1000, overflowX: "auto" }}>
       <DataGrid
         rows={rows}
         columns={columns}

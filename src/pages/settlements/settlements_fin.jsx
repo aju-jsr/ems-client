@@ -71,6 +71,11 @@ import { getCheckSettlement } from "../../services/settlements/checksettlementSe
 import usePaymentMode from "../../hooks/usePaymentMode";
 import { formatIndianAmount } from "../../utils/amountFormatter.js";
 
+// mail send
+import {emailSend} from "../../utils/emailSend.js"
+
+import useEmpolyees from "../../hooks/useEmpolyee.js";
+
 
 export default function Settlement() {
     // Set Form Title
@@ -183,6 +188,9 @@ export default function Settlement() {
 
     // get the Account Type from DB using Hook
     const {  acctypes } = useAccTypes();
+
+    // get Employees
+        const { employees} = useEmpolyees();
 
     // 
     const [settlementamount, setSettlementAmount] = useState(false);
@@ -626,13 +634,16 @@ export default function Settlement() {
         // Set Status based on Approve or Reject
         let  s_id = 0;
         let msg = "";
+        let eventType;
         if (action === "approve") {
             s_id = 7;
            msg = "Settlement No - '" + formData.settlement_no + "' Approved";
+           eventType = "SETTLEMENT_FINANCE_APPROVED";
             console.log("Approve proposal");
         } else if (action === "reject") {
             s_id = 6;
             msg = "Settlement No - '" + formData.settlement_no + "' Rejected";
+            eventType = "SETTLEMENT_FINANCE_REJECTED";
             console.log("Reject proposal");
         }
 
@@ -674,6 +685,23 @@ export default function Settlement() {
             }
             await SettlementAmt_loadData(); // Refresh the settlement amount list after successful submission
             await loadData(); // Refresh the settlements list after successful submission
+
+            // send email
+            const manager = employees.find(
+                (employee) => employee.emp_id === JSON.parse(localStorage.getItem("user"))?.manager_id
+            );
+
+            const req_emp = employees.find(
+                (employee) => employee.emp_id === JSON.parse(localStorage.getItem("user"))?.empId
+            );
+
+            const managerEmail = manager?.email;
+            const subject = `"Settlement ${formData.settlement_no} Created – Approval Required"`;
+            const cc = [req_emp?.email].filter(Boolean);
+            // const cc = ["rajnishkumarjsr@gmail.com"].filter(Boolean);
+
+            await emailSend(eventType, managerEmail, subject, formData.event_name, formData.settlement_no,
+                formData.req_emp_name, cc, null);
             
         } catch (error) {
             console.error(error);

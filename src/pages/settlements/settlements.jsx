@@ -66,6 +66,11 @@ import useGetSettlementAmount from "../../hooks/settlements/useGetSettlementAmou
 // Date check
 import {isDateBetween} from "../../utils/dateCheck.js";
 
+// File Upload and Download
+import { postFile } from "../../services/file/file_upload_Service.js";
+
+import axios from "axios";
+
 // mail send
 import {emailSend} from "../../utils/emailSend.js"
 
@@ -611,6 +616,58 @@ export default function Settlement() {
     // to load the attached file
     const [filelist, setFileList] = useState([]);
 
+    const uploadAttachments = async () => {
+        if (!attachments || attachments.length === 0) {
+          return [];
+        }
+    
+        const attachmentList = [];
+    
+        for (let index = 0; index < attachments.length; index++) {
+          const file = attachments[index];
+    
+          try {
+            // 1. Request pre-signed S3 URL from backend
+            const fileJson = {
+              fileName: file.name,
+              contentType: file.type,
+            };
+    
+            const response = await postFile(fileJson);
+    
+            const { uploadUrl, key } = response;
+    
+            const uploadResponse = await axios.put(
+              uploadUrl,
+              file,
+              {
+                headers: {
+                  "Content-Type": file.type,
+                },
+              }
+            );
+    
+            console.log("S3 upload response:", uploadResponse.status);
+    
+            // 3. Build DB attachment object
+            attachmentList.push({
+              sequence: index + 1,
+              fileName: key,
+              fileSize: file.size,
+              fileType: file.type,
+              file_path: uploadUrl,
+            });
+    
+          } catch (error) {
+            console.error(`Failed to upload ${file.name}`, error);
+    
+            throw new Error(`Failed to upload file: ${file.name}`);
+          }
+        }
+    
+        return attachmentList;
+      };
+
     const {
         loading: settlementSubmitting,
         error: settlementSubmitError,
@@ -630,12 +687,13 @@ export default function Settlement() {
             setAttachmentError(false);
         }
 
-        const attachmentList = attachments.map((file, index) => ({
-            sequence: index + 1,
-            fileName: file.name,
-            fileSize: file.size,
-            fileType: file.type,
-        }));
+        const attachmentList = await uploadAttachments();
+        // const attachmentList = attachments.map((file, index) => ({
+        //     sequence: index + 1,
+        //     fileName: file.name,
+        //     fileSize: file.size,
+        //     fileType: file.type,
+        // }));
 
         const updatedExpenseRows = expenseRows.map((row) => ({
             ...row,

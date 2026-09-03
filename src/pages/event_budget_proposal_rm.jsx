@@ -277,7 +277,14 @@ export default function EventInformation() {
       const cc = [req_emp?.email, rm?.email].filter(Boolean);
       // const cc = ["rajnishkumarjsr@gmail.com", "rajnish_kumar48@yahoo.com"].filter(Boolean);
 
-      await emailSend(eventType, FIN_EMAIL, subject, formData.eventName, formData.requestNo,
+      let eventname
+        if(formData.proposal === 2){
+          eventname = formData.partyName
+        }else{
+          eventname = formData.eventName
+        }
+
+      await emailSend(eventType, FIN_EMAIL, subject, eventname, formData.requestNo,
         formData.employeeName, cc, comments);
     
     } catch (error) {

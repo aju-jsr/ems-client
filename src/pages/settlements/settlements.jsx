@@ -895,7 +895,8 @@ export default function Settlement() {
                     approved_budget: proposal.fin_approved_amount,
                     adv_amount: proposal.advance_amount,
                     unit: proposal.unit_id,
-                    event_name: proposal.event_name,
+                    // event_name: proposal.event_name,
+                    event_name: proposal?.event_name || proposal?.party_name || "",
                     event_start_date:
                         // formatDate(proposal.event_start_date),
                         proposal.event_start_date

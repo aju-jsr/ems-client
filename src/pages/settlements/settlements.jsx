@@ -110,6 +110,7 @@ export default function Settlement() {
         }
     };
 
+    const [isNew, setIsNew] = useState(true);
     // Submit form
     const [disableSubmit, setDisableSubmit] = useState(false);
     const [submitSuccess, setSubmitSuccess] = useState(false);
@@ -117,7 +118,7 @@ export default function Settlement() {
     // Set form data
     const [formData, setFormData] = useState({
         settlement_no: "ESN-",
-        sub_settlement_no: "",
+        sub_settlement_no: "-",
         request_date: TodayformattedDate,
         settlement_type: "",
         status: "Draft",
@@ -569,10 +570,19 @@ export default function Settlement() {
         handleClear();
         if (field === 'sub') {
             setSubSettlement(true);
-            // formData.settlement_no = "";
-            // handleClear();
+            setIsNew(false);
+            // setFormData(initialFormData);
+            setFormData((prevData) => ({
+                ...prevData,
+                ["sub_settlement_no"]: "",
+            }));
         } else {
             setSubSettlement(false);
+            setIsNew(true);
+            setFormData((prevData) => ({
+                ...prevData,
+                ["sub_settlement_no"]: "-",
+            }));
         }
     }
 
@@ -604,6 +614,7 @@ export default function Settlement() {
 
     // Attachment handler
     const [attachments, setAttachments] = useState([]);
+    const [clearFiles, setClearFiles] = useState(false);
     const [attachmentError, setAttachmentError] = useState(false);
     const handleFiles = (files) => {
         setAttachments(files);
@@ -688,12 +699,6 @@ export default function Settlement() {
         }
 
         const attachmentList = await uploadAttachments();
-        // const attachmentList = attachments.map((file, index) => ({
-        //     sequence: index + 1,
-        //     fileName: file.name,
-        //     fileSize: file.size,
-        //     fileType: file.type,
-        // }));
 
         const updatedExpenseRows = expenseRows.map((row) => ({
             ...row,
@@ -701,9 +706,6 @@ export default function Settlement() {
                 String(row.amount || "0").replace(/,/g, "")
             ),
         }));
-
-        
-        
 
         const settlementJson = {
             settlement_no: subsettlement === true
@@ -781,6 +783,8 @@ export default function Settlement() {
                     prev.settlement_no,
             }));
 
+            setTotaleExpense(0);
+
            await loadData(); // Refresh the settlements list after successful submission
 
             // send email
@@ -802,6 +806,7 @@ export default function Settlement() {
 
         } catch (error) {
             console.error(error);
+            setTotaleExpense(0);
             setSubmitSuccess(false);
         }
 
@@ -852,16 +857,28 @@ export default function Settlement() {
         department_name: "",
     };
 
+    const handleClearFiles = () => {
+        setAttachments([]);
+        setClearFiles(true);
+
+        // Reset flag so FileUpload can detect the next clear
+        setTimeout(() => {
+            setClearFiles(false);
+        }, 0);
+    };
+
     const handleClear = () => {
         setDisableSubmit(false);
         setFormData(initialFormData);
         setApproverSection(false);
         setFileList([]);
-        setAttachments([]);
-        
         setAttachmentError(false);
+        handleClearFiles();
 
         setExpenseRows([]);
+
+        setTotaleExpense(0);
+        setSubmitSuccess(false);
     };
 
     // No Blur event for Proposal text box
@@ -945,7 +962,10 @@ export default function Settlement() {
         } catch (error) {
 
             if (error.response?.status === 409) {
-                formData.sub_settlement_no = "";
+                setFormData((prevData) => ({
+                    ...prevData,
+                    ["sub_settlement_no"]: "",
+                }));
                 alert(error.response.data.message);
             } else {
                 console.error("Check settlement error:", error);
@@ -1168,7 +1188,9 @@ export default function Settlement() {
                                     id="ddlSubNo"
                                     value={formData.sub_settlement_no}
                                     label="Sub Settlement No"
-
+                                    slotProps={{
+                                        input: { readOnly: isNew },
+                                    }}
                                     required
                                     error={
                                         !formData.sub_settlement_no
@@ -2060,7 +2082,7 @@ export default function Settlement() {
                                 accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.png"
                                 onFilesChange={handleFiles}
                                 required
-
+                                clearFiles={clearFiles}
                             />
                             <box>
                                 {Number(formData.proposal) === 2 && attachmentError && (

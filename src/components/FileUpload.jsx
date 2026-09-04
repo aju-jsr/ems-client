@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Button,
   Chip,
@@ -11,12 +11,14 @@ export default function FileUpload({
   multiple = true,
   accept = "*",
   onFilesChange,
-//   required = true,
+  clearFiles = false,
 }) {
   const [files, setFiles] = useState([]);
+  const inputRef = useRef(null);
 
   const handleChange = (e) => {
     const selectedFiles = Array.from(e.target.files);
+
     setFiles(selectedFiles);
   };
 
@@ -24,6 +26,18 @@ export default function FileUpload({
     const updatedFiles = files.filter((_, i) => i !== index);
     setFiles(updatedFiles);
   };
+
+  // Clear files when parent changes clearFiles
+  useEffect(() => {
+    if (clearFiles) {
+      setFiles([]);
+
+      // Clear actual HTML file input
+      if (inputRef.current) {
+        inputRef.current.value = "";
+      }
+    }
+  }, [clearFiles]);
 
   useEffect(() => {
     if (onFilesChange) {
@@ -41,23 +55,29 @@ export default function FileUpload({
         {label}
 
         <input
+          ref={inputRef}
           hidden
           multiple={multiple}
           type="file"
           accept={accept}
           onChange={handleChange}
-        //   required={required}
         />
       </Button>
 
-      <Stack direction="column" spacing={1} flexWrap="wrap">
+      <Stack
+        direction="column"
+        spacing={1}
+        flexWrap="wrap"
+      >
         {files.map((file, index) => (
           <Chip
             key={index}
             label={file.name}
             onDelete={() => removeFile(index)}
-            sx={{ justifyContent: "space-between",
-                width: "100%", }}
+            sx={{
+              justifyContent: "space-between",
+              width: "100%",
+            }}
           />
         ))}
       </Stack>

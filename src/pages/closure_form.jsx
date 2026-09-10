@@ -624,7 +624,7 @@ export default function ClosureForm() {
         event.preventDefault();
         setSubmitSuccess(false);
         setDisableSubmit(true);
-        if(expenseRows.length  === 0){
+            if(expenseRows.length  === 0){
             alert("Please Add Expenses.");
             setDisableSubmit(false);
             return;
@@ -1115,6 +1115,7 @@ export default function ClosureForm() {
                                     }
                                     onChange={handleFieldChange("event_authorised_person")}
                                     sx={{
+                                        
                                         "& .MuiInputLabel-root": {
                                             color: formData.event_authorised_person ? "blue" : "red",
                                         },
@@ -1131,7 +1132,7 @@ export default function ClosureForm() {
                 {/* Advance */}
                 <fieldset>
                     <legend>Advance Amount Paid</legend>
-                    <Box sx={{ height: { xs: 360, md: 300 }, width: "100%", maxWidth: 745, overflowX: "auto" }}>
+                    <Box sx={{ height: "100%", width: "100%", maxWidth: 745, overflowX: "auto" }}>
                         <DataGrid
                             rows={rowsAdvAmt}
                             columns={columnsAdvAmt}
@@ -1149,11 +1150,12 @@ export default function ClosureForm() {
 
                             sx={{
                                 // Header
+                                width: "100%",
                                 "& .MuiDataGrid-columnHeaders": {
                                     backgroundColor: "#FFD54F", // Yellow
                                     color: "#000",
                                     fontWeight: "bold",
-                                    fontSize: "0.80rem",
+                                    fontSize: "0.70rem",
                                 },
 
                                 "& .MuiDataGrid-columnHeader": {
@@ -1162,12 +1164,12 @@ export default function ClosureForm() {
 
                                 "& .MuiDataGrid-columnHeaderTitle": {
                                     fontWeight: "bold",
-                                    fontSize: "0.80rem",
+                                    fontSize: "0.70rem",
                                 },
 
                                 // Rows
                                 "& .MuiDataGrid-row": {
-                                    fontSize: "0.80rem",
+                                    fontSize: "0.70rem",
                                 },
 
                                 // Cells
@@ -1178,12 +1180,12 @@ export default function ClosureForm() {
                                     display: "flex",
                                     alignItems: "center",
                                     py: 1,
-                                    fontSize: "0.80rem",
+                                    fontSize: "0.70rem",
                                 },
 
                                 // Footer
                                 "& .MuiDataGrid-footerContainer": {
-                                    fontSize: "0.80rem",
+                                    fontSize: "0.70rem",
                                 },
                             }}
 
@@ -1222,7 +1224,7 @@ export default function ClosureForm() {
                                         backgroundColor: "#FFD54F", // Yellow
                                         color: "#000",
                                         fontWeight: "bold",
-                                        fontSize: "0.80rem",
+                                        fontSize: "0.70rem",
                                     },
 
                                     "& .MuiDataGrid-columnHeader": {
@@ -1231,12 +1233,12 @@ export default function ClosureForm() {
 
                                     "& .MuiDataGrid-columnHeaderTitle": {
                                         fontWeight: "bold",
-                                        fontSize: "0.80rem",
+                                        fontSize: "0.70rem",
                                     },
 
                                     // Rows
                                     "& .MuiDataGrid-row": {
-                                        fontSize: "0.80rem",
+                                        fontSize: "0.70rem",
                                     },
 
                                     // Cells
@@ -1247,7 +1249,7 @@ export default function ClosureForm() {
                                         display: "flex",
                                         alignItems: "center",
                                         py: 1,
-                                        fontSize: "0.80rem",
+                                        fontSize: "0.70rem",
                                         wordWrap: "break-word",
                                         overflowWrap: "break-word",
 
@@ -1255,7 +1257,7 @@ export default function ClosureForm() {
 
                                     // Footer
                                     "& .MuiDataGrid-footerContainer": {
-                                        fontSize: "0.80rem",
+                                        fontSize: "0.70rem",
                                     },
                                 }}
 

@@ -68,13 +68,15 @@ import { getSettlement } from "../../services/settlements/getSettlementById_Serv
 import { getProposaReqNo } from "../../services/proposals_req_no_Service.js";
 import { getCheckSettlement } from "../../services/settlements/checksettlementService.js"
 
-import usePaymentMode from "../../hooks/usePaymentMode";
 import { formatIndianAmount } from "../../utils/amountFormatter.js";
 
 // mail send
 import {emailSend} from "../../utils/emailSend.js"
 
 import useEmpolyees from "../../hooks/useEmpolyee.js";
+
+// get payment mode
+import usePaymentMode from "../../hooks/usePaymentMode.js";
 
 
 export default function Settlement() {
@@ -192,8 +194,40 @@ export default function Settlement() {
     // get Employees
         const { employees} = useEmpolyees();
 
+
+
     // 
     const [settlementamount, setSettlementAmount] = useState(false);
+
+    const onRowActualExpenseSelected = async (params) => {
+
+        const id = params.row.id;
+        const row = expenseRows.find(row => row.id === id);
+        setExpenseForm((prev) => ({
+            ...prev,
+            expense_date: row.expense_date ? dayjs(row.expense_date) : null,
+            expenses_details: row.expenses_details,
+            expenses_head: row.expenses_head,
+            amount: row.amount,
+            has_bill: row.has_bill,
+            paid_to_party: row.paid_to_party,
+            paymentmode: row.mode,
+            remarks: row.details_explantion,
+            comments: row.comments,
+            acc_holder_name: row.acc_holder_name,
+            acc_number: row.acc_number,
+            ifsc_code: row.ifsc_code,
+            bank_name: row.bank_name,
+            branch: row.branch,
+            acc_type_id: row.acc_type_id,
+
+        }));
+
+        document.getElementById("actualexpenses")?.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+        });
+    }
     
     const onRowSelected = async (params) => {
 
@@ -464,6 +498,15 @@ export default function Settlement() {
         amount: "",
         has_bill: "N",
         paid_to_party: "N",
+        paymentmode: "",
+        remarks: "",
+        comments: "",
+        acc_holder_name: "",
+        acc_number: "",
+        ifsc_code: "",
+        bank_name: "",
+        branch: "",
+        acc_type_id: "",
     });
     const formatDate = (value) => value ? dayjs(value).format("YYYY-MM-DD") : "";
 
@@ -1455,10 +1498,11 @@ export default function Settlement() {
                     </LocalizationProvider>
                 </fieldset>
                 {/* Actual Expenses */}
+                <section id="actualexpenses"></section>
                 <fieldset >
                     <legend>Actual Expenses</legend>
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
-                        {/* <Grid container spacing={3}>
+                        <Grid container spacing={3}>
                             <FormControl required sx={formControl3rows} >
                                 <DatePicker
                                     label="Expense Date"
@@ -1466,10 +1510,26 @@ export default function Settlement() {
                                     format="DD-MM-YYYY"
                                     value={expenseForm.expense_date}
                                     onChange={handleExpDateChange("expense_date")}
+                                    // inputRef={requestDateRef}
                                     slotProps={{
+                                        input: { readOnly: true },
                                         textField: {
                                             fullWidth: true,
-                                            // required: true
+                                            // required: true,
+                                            error: !expenseForm.expense_date,
+                                            sx: {
+                                                "& .MuiInputLabel-root": {
+                                                    color: expenseForm.expense_date
+                                                        ? "blue"
+                                                        : "red",
+                                                },
+                                                "& .MuiInputLabel-root.Mui-focused": {
+                                                    color: expenseForm.expense_date
+                                                        ? "blue"
+                                                        : "red",
+                                                },
+                                            },
+
                                         }
 
                                     }}
@@ -1482,9 +1542,24 @@ export default function Settlement() {
                                     id="txtExpenseDetails"
                                     value={expenseForm.expenses_details}
                                     onChange={handleExpFieldChange("expenses_details")}
-                                    // slotProps={{
-                                    //     input: { readOnly: true },
-                                    // }}
+                                    // required
+                                    slotProps={{
+                                        input: { readOnly: true },
+                                    }}
+                                    error={
+                                        !expenseForm.expenses_details
+                                    }
+                                    sx={{
+                                        "& .MuiInputLabel-root": {
+                                            color: expenseForm.expenses_details ? "blue" : "red",
+                                        },
+                                        "& .MuiInputLabel-root.Mui-focused": {
+                                            color: expenseForm.expenses_details ? "blue" : "red",
+                                        },
+                                    }}
+                                // slotProps={{
+                                //     input: { readOnly: true },
+                                // }}
                                 />
                             </FormControl>
                             <FormControl required sx={formControl3rows} >
@@ -1494,22 +1569,324 @@ export default function Settlement() {
                                     id="txtExpenseHead"
                                     value={expenseForm.expenses_head}
                                     onChange={handleExpFieldChange("expenses_head")}
-                                    // slotProps={{
-                                    //     input: { readOnly: true },
-                                    // }}
+                                    slotProps={{
+                                        input: { readOnly: true },
+                                    }}
+                                    sx={{
+                                        "& .MuiInputLabel-root": {
+                                            color: expenseForm.expenses_head ? "blue" : "red",
+                                        },
+                                        "& .MuiInputLabel-root.Mui-focused": {
+                                            color: expenseForm.expenses_head ? "blue" : "red",
+                                        },
+                                    }}
+                                // slotProps={{
+                                //     input: { readOnly: true },
+                                // }}
                                 />
                             </FormControl>
                         </Grid>
                         <Grid container spacing={3}>
                             <FormControl required sx={formControl3rows} >
                                 <TextField
-                                    type="number"
+                                    type="text"
                                     id="txtAmount"
                                     label="Amount"
                                     placeholder="Amount"
-                                    
+                                    // required
+                                    slotProps={{
+                                        input: { readOnly: true },
+                                    }}
+                                    error={
+                                        !expenseForm.amount
+                                    }
+
                                     value={expenseForm.amount}
                                     onChange={handleExpFieldChange("amount")}
+                                    onKeyDown={(e) => {
+                                        if (
+                                            [
+                                                "e",
+                                                "E",
+                                                "+",
+                                                "-",
+                                                "ArrowUp",
+                                                "ArrowDown",
+                                            ].includes(e.key)
+                                        ) {
+                                            e.preventDefault();
+                                        }
+                                    }}
+
+                                    onWheel={(e) => e.target.blur()}
+                                    sx={{
+                                        "& .MuiInputLabel-root": {
+                                            color: expenseForm.amount ? "blue" : "red",
+                                        },
+                                        "& .MuiInputLabel-root.Mui-focused": {
+                                            color: expenseForm.amount ? "blue" : "red",
+                                        },
+                                    }}
+                                />
+                            </FormControl>
+                            <FormControl required sx={formControl3rows} >
+                                <InputLabel id="lblIsBill" sx={{
+                                    color: expenseForm.has_bill
+                                        ? "blue"
+                                        : "red",
+
+                                    "&.Mui-focused": {
+                                        color: expenseForm.has_bill
+                                            ? "blue"
+                                            : "red",
+                                    },
+                                }}>Choose Bill (Y/N)</InputLabel>
+                                <Select
+                                    labelId="lblIsBill"
+                                    id="ddlIsBill"
+                                    value={expenseForm.has_bill}
+                                    label="Choose Bill (Y/N)"
+                                    onChange={handleExpFieldChange("has_bill")}
+                                    slotProps={{
+                                        input: { readOnly: true },
+                                    }}
+                                    // onChange={(e) => {
+                                    //     handleFieldChange("sub_settlement_no")(e);
+                                    // }}
+                                    sx={{
+                                        height: 50,
+                                        '& .MuiSelect-select': {
+                                            height: 50,
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            boxSizing: 'border-box',
+                                        }
+                                    }}
+                                    // Limits the height of the expanded overlay list menu
+                                    MenuProps={{
+                                        PaperProps: {
+                                            style: {
+                                                maxHeight: 200,
+                                            },
+                                        },
+                                    }}
+                                >
+                                    <MenuItem value="Y">Y</MenuItem>
+                                    <MenuItem value="N">N</MenuItem>
+
+                                </Select>
+                            </FormControl>
+
+                            <FormControl sx={formControl3rows} >
+                                <InputLabel id="lblIsBill" sx={{
+                                    color: expenseForm.paid_to_party
+                                        ? "blue"
+                                        : "red",
+
+                                    "&.Mui-focused": {
+                                        color: expenseForm.paid_to_party
+                                            ? "blue"
+                                            : "red",
+                                    },
+                                }}>Choose paid to Party (Y/N)</InputLabel>
+                                <Select
+                                    labelId="lblIsPpaid_to_Party"
+                                    id="ddlIsPpaid_to_Party"
+                                    value={expenseForm.paid_to_party}
+                                    label="Choose paid to Party (Y/N)"
+                                    onChange={handleExpFieldChange("paid_to_party")}
+                                    slotProps={{
+                                        input: { readOnly: true },
+                                    }}
+                                    // onChange={(e) => {
+                                    //     handleFieldChange("sub_settlement_no")(e);
+                                    // }}
+                                    sx={{
+                                        height: 50,
+                                        '& .MuiSelect-select': {
+                                            height: 50,
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            boxSizing: 'border-box',
+                                        }
+                                    }}
+                                    // Limits the height of the expanded overlay list menu
+                                    MenuProps={{
+                                        PaperProps: {
+                                            style: {
+                                                maxHeight: 200,
+                                            },
+                                        },
+                                    }}
+                                >
+                                    <MenuItem value="Y">Y</MenuItem>
+                                    <MenuItem value="N">N</MenuItem>
+
+                                </Select>
+                            </FormControl>
+                        </Grid>
+
+                        {/* Details/Explanation of Expenses Submitted, paymentmode and Remarks */}
+                        <Grid container spacing={3}>
+                            {/* Details/Explanation of Expenses Submitted */}
+                            <FormControl required sx={formControl3rows} >
+                                <TextField
+                                    label="Details/Explanation of Expenses Submitted"
+                                    placeholder="Details/Explanation of Expenses Submitted"
+                                    id="txtRemarks"
+                                    value={expenseForm.remarks}
+                                    onChange={handleExpFieldChange("remarks")}
+                                    multiline
+                                    rows={2}
+                                    // required
+                                    slotProps={{
+                                        input: { readOnly: true },
+                                    }}
+                                    error={
+                                        !expenseForm.remarks
+                                    }
+
+                                    sx={{
+                                        "& .MuiInputLabel-root": {
+                                            color: expenseForm.remarks ? "blue" : "red",
+                                        },
+                                        "& .MuiInputLabel-root.Mui-focused": {
+                                            color: expenseForm.remarks ? "blue" : "red",
+                                        },
+                                    }}
+
+                                // slotProps={{
+                                //     input: { readOnly: true },
+                                // }}
+                                />
+                            </FormControl>
+                            {/* paymentmode */}
+                            <FormControl sx={formControl3rows} >
+                                <InputLabel id="lblPaymentMode" required
+                                    sx={{
+                                        color: expenseForm.paymentmode
+                                            ? "blue"
+                                            : "red",
+
+                                        "&.Mui-focused": {
+                                            color: expenseForm.paymentmode
+                                                ? "blue"
+                                                : "red",
+                                        },
+                                    }}>Choose Payment Mode</InputLabel>
+                                <Select
+                                    labelId="lblPaymentMode"
+                                    id="ddlPaymentMode"
+                                    value={expenseForm.paymentmode}
+                                    // required
+                                    error={
+                                        !expenseForm.paymentmode
+                                    }
+                                    slotProps={{
+                                        input: { readOnly: true },
+                                    }}
+
+                                    label="Choose Payment Mode"
+                                    // onChange={handleExpFieldChange("paymentmode")}
+                                    onChange={(e) => {
+                                        const id = Number(e.target.value);
+
+                                        setExpenseForm((prevData) => ({
+                                            ...prevData,
+                                            paymentmode: id
+                                        }));
+                                    }}
+
+                                    // Controls the structural height of the selector input box
+                                    sx={{
+                                        height: 50,
+                                        '& .MuiSelect-select': {
+                                            height: 50,
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            boxSizing: 'border-box',
+                                        }
+                                    }}
+                                    // Limits the height of the expanded overlay list menu
+                                    MenuProps={{
+                                        PaperProps: {
+                                            style: {
+                                                maxHeight: 200,
+                                            },
+                                        },
+                                    }}
+                                >
+                                    {paymentmode.map((p) => (
+                                        <MenuItem
+                                            key={p.id}
+                                            value={p.id}
+                                        >
+                                            {p.name}
+                                        </MenuItem>
+                                    ))}
+
+                                </Select>
+                            </FormControl>
+                            {/* Remarks */}
+                            <FormControl sx={formControl3rows} >
+                                <TextField
+                                    label="Remarks"
+                                    placeholder="Remarks"
+                                    id="txtcomments"
+                                    value={expenseForm.comments}
+                                    onChange={handleExpFieldChange("comments")}
+                                    // multiline
+                                    // rows={2}
+                                    // required
+                                    error={
+                                        !expenseForm.comments
+                                    }
+                                    slotProps={{
+                                        input: { readOnly: true },
+                                    }}
+
+
+                                    sx={{
+                                        "& .MuiInputLabel-root": {
+                                            color: expenseForm.comments ? "blue" : "red",
+                                        },
+                                        "& .MuiInputLabel-root.Mui-focused": {
+                                            color: expenseForm.comments ? "blue" : "red",
+                                        },
+                                    }}
+
+                                // slotProps={{
+                                //     input: { readOnly: true },
+                                // }}
+                                />
+                            </FormControl>
+                        </Grid>
+
+                        {/* Bank Details */}
+                        <Grid container spacing={3}>
+                            {/* ACCOUNT HOLDER NAME */}
+                            <FormControl sx={formControl3rows}>
+                                <TextField
+                                    label="ACCOUNT HOLDER NAME"
+                                    placeholder="ACCOUNT HOLDER NAME"
+                                    value={expenseForm.acc_holder_name}
+                                    onChange={handleExpFieldChange("acc_holder_name")}
+                                    slotProps={{
+                                        input: { readOnly: true },
+                                    }}
+                                />
+                            </FormControl>
+                            {/* ACCOUNT NUMBER */}
+                            <FormControl sx={formControl3rows}>
+                                <TextField
+                                    type="number"
+                                    label="ACCOUNT NUMBER"
+                                    placeholder="ACCOUNT NUMBER"
+                                    value={expenseForm.acc_number}
+                                    onChange={handleExpFieldChange("acc_number")}
+                                    slotProps={{
+                                        input: { readOnly: true },
+                                    }}
                                     onKeyDown={(e) => {
                                         if (["e", "E", "+", "-", "ArrowUp", "ArrowDown"].includes(e.key)) {
                                             e.preventDefault();
@@ -1529,52 +1906,60 @@ export default function Settlement() {
                                     }}
                                 />
                             </FormControl>
-                            <FormControl required sx={formControl3rows} >
-                                <InputLabel id="lblIsBill">Choose Bill (Y/N)</InputLabel>
-                                <Select
-                                    labelId="lblIsBill"
-                                    id="ddlIsBill"
-                                    value={expenseForm.has_bill}
-                                    label="Choose Bill (Y/N)"
-                                    onChange={handleExpFieldChange("has_bill")}
-                                    // onChange={(e) => {
-                                    //     handleFieldChange("sub_settlement_no")(e);
-                                    // }}
-                                    sx={{
-                                        height: 50,
-                                        '& .MuiSelect-select': {
-                                            height: 50,
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            boxSizing: 'border-box',
-                                        }
+                            {/* IFSC CODE */}
+                            <FormControl sx={formControl3rows}>
+                                <TextField
+                                    label="IFSC CODE"
+                                    placeholder="IFSC CODE"
+                                    value={expenseForm.ifsc_code}
+                                    onChange={handleExpFieldChange("ifsc_code")}
+                                    slotProps={{
+                                        input: { readOnly: true },
                                     }}
-                                    // Limits the height of the expanded overlay list menu
-                                    MenuProps={{
-                                        PaperProps: {
-                                            style: {
-                                                maxHeight: 200,
-                                            },
-                                        },
-                                    }}
-                                >
-                                    <MenuItem value="Y">Y</MenuItem>
-                                    <MenuItem value="N">N</MenuItem>
-                                    
-                                </Select>
+                                />
                             </FormControl>
 
-                            <FormControl sx={formControl3rows} >
-                                <InputLabel id="lblIsBill">Choose paid to Party (Y/N)</InputLabel>
+                        </Grid>
+
+                        {/* BANK DETAILS 2nd row */}
+                        <Grid container spacing={3}>
+                            {/* BANK NAME */}
+                            <FormControl sx={formControl3rows}>
+                                <TextField
+                                    label="BANK NAME"
+                                    placeholder="BANK NAME  "
+                                    value={expenseForm.bank_name}
+                                    onChange={handleExpFieldChange("bank_name")}
+                                    slotProps={{
+                                        input: { readOnly: true },
+                                    }}
+                                />
+                            </FormControl>
+                            {/* BRANCH */}
+                            <FormControl sx={formControl3rows}>
+                                <TextField
+                                    label="BRANCH"
+                                    placeholder="BRANCH"
+                                    value={expenseForm.branch}
+                                    onChange={handleExpFieldChange("branch")}
+                                    slotProps={{
+                                        input: { readOnly: true },
+                                    }}
+                                />
+                            </FormControl>
+                            {/* A/C Type */}
+                            <FormControl sx={formControl3rows}>
+                                <InputLabel id="lblAccType">Choose Account Type</InputLabel>
                                 <Select
-                                    labelId="lblIsPpaid_to_Party"
-                                    id="ddlIsPpaid_to_Party"
-                                    value={expenseForm.paid_to_party}
-                                    label="Choose paid to Party (Y/N)"
-                                    onChange={handleExpFieldChange("paid_to_party")}
-                                    // onChange={(e) => {
-                                    //     handleFieldChange("sub_settlement_no")(e);
-                                    // }}
+                                    labelId="lblAccType"
+                                    id="ddlAccType"
+                                    value={expenseForm.acc_type_id}
+                                    label="Choose Account Type"
+                                    onChange={handleExpFieldChange("acc_type_id")}
+                                    slotProps={{
+                                        input: { readOnly: true },
+                                    }}
+                                    // Controls the structural height of the selector input box
                                     sx={{
                                         height: 50,
                                         '& .MuiSelect-select': {
@@ -1593,12 +1978,64 @@ export default function Settlement() {
                                         },
                                     }}
                                 >
-                                    <MenuItem value="Y">Y</MenuItem>
-                                    <MenuItem value="N">N</MenuItem>
-                                    
+                                    {acctypes.map((acc) => (
+                                        <MenuItem
+                                            key={acc.id}
+                                            value={acc.id}
+                                        >
+                                            {acc.acc_name}
+                                        </MenuItem>
+                                    ))}
+
                                 </Select>
+
+                            </FormControl>
+
+                        </Grid>
+
+                        {/* <Grid container spacing={3}>
+                            <FormControl required sx={formControl2rows} >
+                                <FileUpload
+                                    label="Upload Bills"
+                                    multiple={true}
+                                    accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.png"
+                                    onFilesChange={handleFiles}
+                                    readOnly
+                                />
+                                <box>
+                                    {Number(formData.proposal) === 2 && attachmentError && (
+                                        <Typography color="error" variant="caption">
+                                            Attachment is required.
+                                        </Typography>
+                                    )}
+                                    <Typography mt={3}>
+                                        Total Files : {attachments.length}
+                                    </Typography>
+                                </box>
+
+                            </FormControl>
+                            <FormControl required sx={formControl2rows} >
+                                <TextField
+                                    label="Remarks"
+                                    placeholder="Remarks"
+                                    id="txtRemarks"
+                                    value={expenseForm.remarks}
+                                    onChange={handleExpFieldChange("remarks")}
+                                    multiline
+                                    rows={2}
+                                    slotProps={{
+                                        input: { readOnly: true },
+                                    }}
+                                />
                             </FormControl>
                         </Grid> */}
+                        <Grid container spacing={2}>
+                            <FormControl sx={formControl2rows}>
+                                <AttachmentList files={filelist} />
+                            </FormControl>
+                        </Grid>
+
+                        
                         <Box sx={{ height: { xs: 420, md: 370 }, width: "100%", maxWidth: 1000, overflowX: "auto" }}>
                         {/* <Button
                             variant="contained"
@@ -1610,6 +2047,7 @@ export default function Settlement() {
                         <DataGrid
                             rows={expenseRows}
                             columns={actualExpensesColumns}
+                            onRowClick={onRowActualExpenseSelected}
                             // processRowUpdate={processRowUpdate}
                             // experimentalFeatures={{ newEditingApi: true }}
                             // disableRowSelectionOnClick
@@ -1663,6 +2101,10 @@ export default function Settlement() {
                                 // Footer
                                 "& .MuiDataGrid-footerContainer": {
                                     fontSize: "0.70rem",
+                                },
+
+                                "& .MuiDataGrid-row:hover": {
+                                    cursor: "pointer",
                                 },
                             }}
 
@@ -1737,186 +2179,7 @@ export default function Settlement() {
                             </FormControl>
                     </Grid>        
                 </fieldset>
-
-                {/* Supporting Documents */}
-                <fieldset >
-                    <legend>Supporting Documents</legend>
-                    <Grid container spacing={3}>
-                        <FormControl required sx={formControl2rows} >
-                            <FileUpload
-                                label="Upload Bills"
-                                multiple={true}
-                                accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.png"
-                                onFilesChange={handleFiles}
-                                readOnly
-                            />
-                            <box>
-                                {Number(formData.proposal) === 2 && attachmentError && (
-                                    <Typography color="error" variant="caption">
-                                        Attachment is required.
-                                    </Typography>
-                                )}
-                                <Typography mt={3}>
-                                    Total Files : {attachments.length}
-                                </Typography>
-                            </box>
-
-                        </FormControl>
-                        <FormControl required sx={formControl2rows} >
-                            <TextField
-                                label="Remarks"
-                                placeholder="Remarks"
-                                id="txtRemarks"
-                                value={expenseForm.remarks}
-                                onChange={handleExpFieldChange("remarks")}
-                                multiline
-                                rows={2}
-                            slotProps={{
-                                input: { readOnly: true },
-                            }}
-                            />
-                        </FormControl>
-                    </Grid>
-                    <Grid container spacing={3}>
-                        <FormControl required sx={formControl2rows} >
-                            <FormControl sx={formControl3rows}>
-                                <AttachmentList files={filelist} />
-                            </FormControl>
-                        </FormControl>
-                    </Grid>
-                </fieldset>
-
-                <h5>BANK DETAILS OF PARTY TO WHOM PAYMENT HAS TO BE MADE</h5>
-                {/* BANK DETAILS 1st row */}
-                <Grid container spacing={3}>
-                    {/* ACCOUNT HOLDER NAME */}
-                    <FormControl sx={formControl3rows}>
-                        <TextField
-                            label="ACCOUNT HOLDER NAME"
-                            placeholder="ACCOUNT HOLDER NAME"
-                            value={formData.acc_holder_name}
-                            onChange={handleFieldChange("acc_holder_name")}
-                            slotProps={{
-                                input: { readOnly: true },
-                            }}
-                        />
-                    </FormControl>
-                    {/* ACCOUNT NUMBER */}
-                    <FormControl sx={formControl3rows}>
-                        <TextField
-                            type="number"
-                            label="ACCOUNT NUMBER"
-                            placeholder="ACCOUNT NUMBER"
-                            value={formData.acc_number}
-                            onChange={handleFieldChange("acc_number")}
-                            slotProps={{
-                                input: { readOnly: true },
-                            }}
-                            onKeyDown={(e) => {
-                                if (["e", "E", "+", "-", "ArrowUp", "ArrowDown"].includes(e.key)) {
-                                    e.preventDefault();
-                                }
-                            }}
-
-                            onWheel={(e) => e.target.blur()}
-                            sx={{
-                                "& input[type=number]": {
-                                    MozAppearance: "textfield",
-                                },
-                                "& input[type=number]::-webkit-outer-spin-button, & input[type=number]::-webkit-inner-spin-button":
-                                {
-                                    WebkitAppearance: "none",
-                                    margin: 0,
-                                },
-                            }}
-                        />
-                    </FormControl>
-                    {/* IFSC CODE */}
-                    <FormControl sx={formControl3rows}>
-                        <TextField
-                            label="IFSC CODE"
-                            placeholder="IFSC CODE"
-                            value={formData.ifsc_code}
-                            onChange={handleFieldChange("ifsc_code")}
-                            slotProps={{
-                                input: { readOnly: true },
-                            }}
-                        />
-                    </FormControl>
-
-                </Grid>
-
-                {/* BANK DETAILS 2nd row */}
-                <Grid container spacing={3}>
-                    {/* BANK NAME */}
-                    <FormControl sx={formControl3rows}>
-                        <TextField
-                            label="BANK NAME"
-                            placeholder="BANK NAME  "
-                            value={formData.bank_name}
-                            onChange={handleFieldChange("bank_name")}
-                            slotProps={{
-                                input: { readOnly: true },
-                            }}
-                        />
-                    </FormControl>
-                    {/* BRANCH */}
-                    <FormControl sx={formControl3rows}>
-                        <TextField
-                            label="BRANCH"
-                            placeholder="BRANCH"
-                            value={formData.branch}
-                            onChange={handleFieldChange("branch")}
-                            slotProps={{
-                                input: { readOnly: true },
-                            }}
-                        />
-                    </FormControl>
-                    {/* A/C Type */}
-                    <FormControl sx={formControl3rows}>
-                        <InputLabel id="lblAccType">Choose Account Type</InputLabel>
-                        <Select
-                            labelId="lblAccType"
-                            id="ddlAccType"
-                            value={formData.acc_type_id}
-                            label="Choose Account Type"
-                            slotProps={{
-                                input: { readOnly: true },
-                            }}
-                            onChange={handleFieldChange("acc_type_id")}
-                            // Controls the structural height of the selector input box
-                            sx={{
-                                height: 50,
-                                '& .MuiSelect-select': {
-                                    height: 50,
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    boxSizing: 'border-box',
-                                }
-                            }}
-                            // Limits the height of the expanded overlay list menu
-                            MenuProps={{
-                                PaperProps: {
-                                    style: {
-                                        maxHeight: 200,
-                                    },
-                                },
-                            }}
-                        >
-                            {acctypes.map((acc) => (
-                                <MenuItem
-                                    key={acc.id}
-                                    value={acc.id}
-                                >
-                                    {acc.acc_name}
-                                </MenuItem>
-                            ))}
-
-                        </Select>
-
-                    </FormControl>
-
-                </Grid>
+                
                 {/* Approver Section */}
                 <fieldset>
                     <legend>Approver Section</legend>
